@@ -1,0 +1,200 @@
+html {
+    font-size: 62.5%;
+    font-weight: normal;
+    line-height: 1.2;
+}
+
+a {
+    color: #006eff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.none {
+  display: none !important;
+}
+
+.hb-contents-wrapper {
+    padding: 50px 0 90px;
+}
+
+.hb-container.hb-l-inside, .hb-container.hb-l-inside-half, .hb-container.hb-l-inside-pc {
+    padding: 10px;
+    position: relative;
+}
+
+
+}
+
+.hb-container.hb-l-inside, .hb-container.hb-l-inside-half, .hb-container.hb-l-inside-pc {
+    padding: 10px;
+    position: relative;
+}
+
+.hb-container {
+    margin: 0 10px;
+    position: relative;
+}
+
+* {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    word-break: normal;
+    word-wrap: break-word;
+}
+
+h2 {
+    margin: 0 0 15px 0;
+    font-size: 24px;
+    font-size: 2.4rem;
+}
+
+p {
+    line-height: 1.5;
+}
+
+p, span {
+    color: #646464;
+    font-size: 14px;
+    font-size: 1.4rem;
+}
+
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,Roboto,"Droid Sans","メイリオ",Meiryo,"ＭＳ Ｐゴシック","ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic ProN",sans-serif;
+    color: #323232;
+    background: #fff;
+}
+
+
+.auth-input-double label {
+    margin-top: -4px;
+}
+
+label {
+    cursor: pointer;
+    display: inline-block;
+    width: 100%;
+    overflow-x: hidden;
+    font-size: 14px;
+    font-size: 1.4rem;
+    color: #646464;
+}
+
+.auth-input-double label input {
+    margin-bottom: 4px;
+    font-size: 16px;
+    font-size: 1.6rem;
+    -webkit-appearance: none;
+}
+
+input[type=text], input[type=password], input[type=tel], input[type=email], textarea {
+    padding: 10px;
+    width: 100%;
+}
+
+input[type=text].ng-invalid, input[type=password].ng-invalid, input[type=tel].ng-invalid, input[type=email].ng-invalid, textarea.ng-invalid, input[type=text], input[type=password], input[type=tel], input[type=email], textarea, .hb-select select {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    border: #d9d9d9 solid 1px;
+    color: #646464;
+    background: #fafafa;
+    font-family: "Helvetica Neue",Helvetica,Arial,Roboto,"Droid Sans","メイリオ",Meiryo,"ＭＳ Ｐゴシック","ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic ProN",sans-serif;
+    font-size: 16px;
+    font-size: 1.6rem;
+}
+
+.hb-is-decide.hb-btn, .hb-btn {
+    font-size: 18px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    color: #323232;
+    background: #f0f0f0;
+    border: #d9d9d9 1px solid;
+    border: rgba(0,0,0,0.15) 1px solid;
+    -moz-box-shadow: rgba(0,0,0,0.05) 0 2px 0 0,rgba(0,0,0,0.15) 0 -2px 0 0 inset;
+    -webkit-box-shadow: rgba(0,0,0,0.05) 0 2px 0 0, rgba(0,0,0,0.15) 0 -2px 0 0 inset;
+    box-shadow: rgba(0,0,0,0.05) 0 2px 0 0, rgba(0,0,0,0.15) 0 -2px 0 0 inset;
+    display: block;
+}
+
+.hb-is-decide.hb-btn {
+    color: #fff;
+    background: #39aadc;
+    border: #39aadc 1px solid;
+    -moz-box-shadow: rgba(0,0,0,0.05) 0 2px 0 0,rgba(0,0,0,0.15) 0 -2px 0 0 inset;
+    -webkit-box-shadow: rgba(0,0,0,0.05) 0 2px 0 0, rgba(0,0,0,0.15) 0 -2px 0 0 inset;
+    box-shadow: rgba(0,0,0,0.05) 0 2px 0 0, rgba(0,0,0,0.15) 0 -2px 0 0 inset;
+}
+
+.hb-btn {
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.hb-is-decide.hb-btn:hover {
+    background: #1d99d0;
+    color: #fff;
+}
+
+.hb-btn:active {
+    -moz-box-shadow: rgba(0,0,0,0.05) 0 0 0 0,rgba(0,0,0,0.15) 0 2px 0 0 inset;
+    -webkit-box-shadow: rgba(0,0,0,0.05) 0 0 0 0, rgba(0,0,0,0.15) 0 2px 0 0 inset;
+    box-shadow: rgba(0,0,0,0.05) 0 0 0 0, rgba(0,0,0,0.15) 0 2px 0 0 inset;
+}
+
+input:focus{
+    outline: none;
+}
+
+@media screen and (min-width: 321px){
+.auth-input-double label input {
+    font-size: 18px;
+    font-size: 1.8rem;
+}}
+
+@media screen and (min-width: 640px) {
+.hb-contents-wrapper {
+    padding: 90px 30px 90px;
+    margin: 0 auto;
+}
+
+.auth-input-double label input {
+    font-size: 22px;
+    font-size: 2.2rem;
+}
+
+.hb-container.hb-l-inside, .hb-container.hb-l-inside-half, .hb-container.hb-l-inside-pc {
+    width: 72%;
+    margin: 0 auto;
+}
+
+.hb-container.hb-l-inside-half {
+    width: 50%;
+}}
+
+@media screen and (max-width: 940px){
+
+.hb-container.hb-l-inside-half {
+    width: 70%;
+}}
+
+@media screen and (min-width: 940px){
+.hb-contents-wrapper {
+	width: 940px;
+    padding: 90px 80px 90px;
+}}
+
+@media screen and (max-width: 640px){
+.hb-container.hb-l-inside-half {
+    width: auto;
+}}
