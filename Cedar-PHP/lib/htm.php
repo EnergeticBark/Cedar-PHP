@@ -375,6 +375,46 @@ function printReply($reply){
     echo '</div></li>';
 }
 
+function uploadImage($filename) {
+	/*$client_id="";
+    $handle = fopen($filename, "r");
+    $data = fread($handle, filesize($filename));
+    $pvars = array('image' => base64_encode($data));
+    $timeout = 60;
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, 'https://api.imgur.com/3/image.json');
+    curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: Client-ID ' . $client_id));
+    curl_setopt($curl, CURLOPT_POST, 1);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $pvars);
+    $out = curl_exec($curl);
+    curl_close ($curl);
+    $pms = json_decode($out,true);
+    @$face=$pms['data']['link'] or $errors[] = 'Imgur upload failed';*/
+	$handle = fopen($filename, "r");
+	$data = fread($handle, filesize($filename));
+	$pvars = array('file' => (exif_imagetype($filename) == 1 ? 'data:image/gif;base64,' : (exif_imagetype($filename) == 2 ? 'data:image/jpg;base64,' : (exif_imagetype($filename) == 3 ? 'data:image/png;base64,' : (exif_imagetype($filename) == 6 ? 'data:image/bmp;base64,' : '')))) . base64_encode($data),
+		'api_key' => '',
+		'upload_preset' => '');
+	$timeout = 30;
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, 'https://api.cloudinary.com/v1_1/[site]/auto/upload');
+	curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+	curl_setopt($curl, CURLOPT_POST, 1);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curl, CURLOPT_POSTFIELDS, $pvars);
+	$out = curl_exec($curl);
+	curl_close ($curl);
+	$pms = json_decode($out,true);
+
+	if (@$image=$pms['secure_url']) {
+		return $image;
+	} else {
+		return 1;
+	}
+}
+
 function get_percentage($total, $number){if($total>0){return round($number/($total/100),2);}else{return 0;}}
 
 function humanTiming($time){

@@ -79,39 +79,12 @@ if(empty($_SESSION['signed_in'])){
     				$errors[] = 'upload an image';
     			} else {
     				$filename = $img['tmp_name'];
-    				/*$client_id="4b0587358e1f558";
-    				$handle = fopen($filename, "r");
-    				$data = fread($handle, filesize($filename));
-    				$pvars = array('image' => base64_encode($data));
-    				$timeout = 30;
-    				$curl = curl_init();
-    				curl_setopt($curl, CURLOPT_URL, 'https://api.imgur.com/3/image.json');
-    				curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-    				curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: Client-ID ' . $client_id));
-    				curl_setopt($curl, CURLOPT_POST, 1);
-    				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    				curl_setopt($curl, CURLOPT_POSTFIELDS, $pvars);
-    				$out = curl_exec($curl);
-    				curl_close ($curl);
-    				$pms = json_decode($out,true);
-    				@$face=$pms['data']['link'] or $errors[] = 'Imgur upload failed';*/
 
-    				$handle = fopen($filename, "r");
-                    $data = fread($handle, filesize($filename));
-                    $pvars = array('file' => (exif_imagetype($filename) == 1 ? 'data:image/gif;base64,' : (exif_imagetype($filename) == 2 ? 'data:image/jpg;base64,' : (exif_imagetype($filename) == 3 ? 'data:image/png;base64,' : (exif_imagetype($filename) == 6 ? 'data:image/bmp;base64,' : '')))) . base64_encode($data),
-                        'api_key' => '995624496988417',
-                        'upload_preset' => 'fs0hzgxj');
-                    $timeout = 30;
-                    $curl = curl_init();
-                    curl_setopt($curl, CURLOPT_URL, 'https://api.cloudinary.com/v1_1/cedar/auto/upload');
-                    curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-                    curl_setopt($curl, CURLOPT_POST, 1);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $pvars);
-                    $out = curl_exec($curl);
-                    curl_close ($curl);
-                    $pms = json_decode($out,true);
-                    @$face=$pms['secure_url'] or $errors[] = 'Image upload failed';
+                    //imageUpload() returns 1 if it fails and the image URL if successful
+                    $face = uploadImage($filename);
+                    if ($face == 1) {
+                        $errors[] = 'Image upload failed';
+                    }
     			}
     		}
 

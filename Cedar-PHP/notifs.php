@@ -44,7 +44,7 @@ if(!$notifs_result->num_rows == 0){
 		}
 
 		echo '<div class="news-list-content'.($notif['notif_read'] == 0 ? ' notify' : '').' trigger" tabindex="0" data-href="'.$notifurl.'">
-		  <a href="/users/'. $user['user_name'] .'/posts" class="icon-container"><img src="'.($notif['notif_type'] == 5?'/img/miiverse-administrator.png':printFace($user['user_face'], 0)).'" id="icon"></a>
+		  <a href="/users/'. $user['user_name'] .'/posts" class="icon-container"><img src="'.($notif['notif_type'] == 5?'/assets/img/miiverse-administrator.png':printFace($user['user_face'], 0)).'" id="icon"></a>
 		<div class="body">';
 
 		if ($notif['notif_type'] == 5){
@@ -99,16 +99,17 @@ if(!$notifs_result->num_rows == 0){
 
 			$following = mysqli_query($dbc, 'SELECT * FROM follows WHERE follow_by = '.$_SESSION['user_id'].' AND follow_to = '.$notif['notif_by'].' LIMIT 1');
 
-			if ($notif['notif_type'] == 4 && $following->num_rows == 0){
+			if ($notif['notif_type'] == 4 && $following->num_rows == 0) {
 				echo '<div class="toggle-button"><button type="button" data-user-id="'.$notif['notif_by'].'" class="follow-button button symbol relationship-button" data-community-id="" data-url-id="" data-track-label="user" data-title-id="" data-track-action="follow" data-track-category="follow">Follow</button>
 				<button type="button" class="button follow-done-button relationship-button symbol none" disabled="">Follow</button></div>';
 			}
 		}
 
-		echo '<span class="timestamp"> '. humanTiming(strtotime($notif['notif_date'])) .'</span></div></div>';
+		echo '
+		<span class="timestamp">'. humanTiming(strtotime($notif['notif_date'])) .'</span></div></div>';
 	}
 
-	$dbc->query('UPDATE notifs SET notif_read = "1" WHERE notif_to = '.$_SESSION['user_id'].'');
+	$dbc->query('UPDATE notifs SET notif_read = 1 WHERE notif_to = '. $_SESSION['user_id'] .'');
 
 } else {
 	echo '<div id="user-page-no-content" class="no-content"><div><p>No updates.</p></div></div>';

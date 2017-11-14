@@ -74,7 +74,7 @@ if(empty($_SESSION['signed_in'])){
 		  <ul class="settings-list">
 		    <li class="setting-profile-comment">
 		      <p class="settings-label">Profile Comment</p>
-		      <textarea id="profile-text" class="textarea" name="profile_comment" maxlength="400" placeholder="Write about yourself here.">'. (!is_null($profile['bio']) ? $profile['bio'] : '') .'</textarea>
+		      <textarea id="profile-text" class="textarea" name="profile_comment" maxlength="400" placeholder="Write about yourself here.">'. $user['bio'] .'</textarea>
 		    </li>
 
 		    <li>
@@ -85,7 +85,7 @@ if(empty($_SESSION['signed_in'])){
 		    <li class="setting-profile-post">
 		      <p class="settings-label">Favorite Post</p>
 		      <p class="note">You can set one of your posts as your favorite via the settings button of that post.</p>
-		      '.(isset($profile['post_image'])?'<div class="select-content"><button id="profile-post" type="button" class="submit"><span class="better-fav-button" style="background-image:url('.$profile['post_image'].')"></span><span class="symbol">Remove Favorite Post</span></button></div>':'').'
+		      '. (isset($profile['post_image']) ? '<div class="select-content"><button id="profile-post" type="button" class="submit"><span class="better-fav-button" style="background-image:url('. $profile['post_image'] .')"></span><span class="symbol">Remove Favorite Post</span></button></div>':'') .'
 		    </li>
 
 		    <li>
@@ -167,7 +167,7 @@ if(empty($_SESSION['signed_in'])){
     <p class="settings-label"><label for="select_birthday">When is your Birthday?</label></p>
     <div class="select-content">
       <div class="select-button">
-        <input type="date" name="birthday" min="2017-01-01" max="2017-12-31" value="'. (isset($profile['birthday']) ? date('Y-m-d', strtotime($profile['birthday'])) : '') .'" style="width: auto; max-width: 100%; min-width: 50%; font-size: 16px;">
+        <input type="date" name="birthday" min="2017-01-01" max="2017-12-31" value="'. (isset($user['birthday']) ? date('Y-m-d', strtotime($user['birthday'])) : '') .'" style="width: auto; max-width: 100%; min-width: 50%; font-size: 16px;">
       </div>
     </div>
     <p class="note">Only the day and month are stored.</p>
@@ -254,39 +254,12 @@ if(empty($_SESSION['signed_in'])){
     			$img=$_FILES['face'];
     			if(!empty($img['name'])){
     				$filename = $img['tmp_name'];
-    				/*$client_id="4b0587358e1f558";
-    				$handle = fopen($filename, "r");
-    				$data = fread($handle, filesize($filename));
-    				$pvars = array('image' => base64_encode($data));
-    				$timeout = 60;
-    				$curl = curl_init();
-    				curl_setopt($curl, CURLOPT_URL, 'https://api.imgur.com/3/image.json');
-    				curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-    				curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: Client-ID ' . $client_id));
-    				curl_setopt($curl, CURLOPT_POST, 1);
-    				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    				curl_setopt($curl, CURLOPT_POSTFIELDS, $pvars);
-    				$out = curl_exec($curl);
-    				curl_close ($curl);
-    				$pms = json_decode($out,true);
-    				@$face=$pms['data']['link'] or $errors[] = 'Imgur upload failed';
-                    */
-                    $handle = fopen($filename, "r");
-                    $data = fread($handle, filesize($filename));
-                    $pvars = array('file' => (exif_imagetype($filename) == 1 ? 'data:image/gif;base64,' : (exif_imagetype($filename) == 2 ? 'data:image/jpg;base64,' : (exif_imagetype($filename) == 3 ? 'data:image/png;base64,' : (exif_imagetype($filename) == 6 ? 'data:image/bmp;base64,' : '')))) . base64_encode($data),
-                        'api_key' => '995624496988417',
-                        'upload_preset' => 'fs0hzgxj');
-                    $timeout = 30;
-                    $curl = curl_init();
-                    curl_setopt($curl, CURLOPT_URL, 'https://api.cloudinary.com/v1_1/cedar/auto/upload');
-                    curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-                    curl_setopt($curl, CURLOPT_POST, 1);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $pvars);
-                    $out = curl_exec($curl);
-                    curl_close ($curl);
-                    $pms = json_decode($out,true);
-                    @$face=$pms['secure_url'] or $errors[] = 'Image upload failed';
+    				
+                    //imageUpload() returns 1 if it fails and the image URL if successful
+                    $face = uploadImage($filename);
+                    if ($face == 1) {
+                    	$errors[] = 'Image upload failed';
+                    }
 
     				if(!empty($errors)){
 
