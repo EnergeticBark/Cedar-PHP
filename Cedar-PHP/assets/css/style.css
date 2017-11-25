@@ -2464,6 +2464,14 @@ h2.reply-label {
     color: #5ac800;
 }
 
+.post-link {
+  color: #0080ff;
+}
+
+.post-link:hover {
+	text-decoration: underline;
+}
+
 form.search input[type="text"]:focus {
     outline: none;
 }

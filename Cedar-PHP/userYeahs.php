@@ -101,7 +101,7 @@ if ($user_result->num_rows == 0) {
                   </p>
                   <a href="/users/'. $reply_user['user_name'] .'/posts" class="icon-container';
 
-                if ($reply_user['user_level'] == 'verified') {
+                if ($reply_user['user_level'] > 1) {
                     echo ' verified';
                 }
 
@@ -122,7 +122,7 @@ if ($user_result->num_rows == 0) {
 
 
                 echo '<button class="yeah symbol '. (checkYeahAdded($replies['reply_id'], 'reply', $_SESSION['user_id']) ? 'yeah-added' : '') .'" '. (!empty($_SESSION['signed_in']) && !checkReplyCreator($replies['reply_id'], $_SESSION['user_id']) ? '' : 'disabled') .' id="'. $replies['reply_id'] .'" data-track-label="reply"><span class="yeah-button-text">'. (checkYeahAdded($replies['reply_id'], 'reply', $_SESSION['user_id']) ? 'Unyeah' : 'Yeah!') .'</span></button>
-                <div class="empathy symbol"><span class="yeah-count">' . $yeah_amount['COUNT(yeah_by)'] . '</span></div>';
+                <div class="empathy symbol"><span class="yeah-count">'. $yeah_amount['COUNT(yeah_by)'] .'</span></div>';
                 echo '</div></div></div>';
             }
         }

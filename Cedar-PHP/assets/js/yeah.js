@@ -318,27 +318,27 @@ function bindEvents() {
 	//checks if loadOnScroll is defined. So this code will only run on pages the need it
 	if ((typeof loadOnScroll !== 'undefined')) {
 		
-	$(window).scroll(function() {
-		
-	//checks if you're at the bottom of the page and if you are it loads more posts
-    if ($(window).scrollTop() + window.innerHeight >= $('[data-next-page-url]').height()) {
-		if (loading == 0 && aTbottom == false) {
-		$("[data-next-page-url]").append('<div class="post-list-loading"><img src="/img/loading-image-green.gif" alt=""></div>');
-		loading = 1;
-		$.get($('[data-next-page-url]').attr('data-next-page-url'), function(data) {
-			if(data == ''){
-				aTbottom = true;
-				bindEvents();
-			}
-			$("[data-next-page-url]").append(data);
-			offset++;
-			$('[data-next-page-url]').attr('data-next-page-url', $('[data-next-page-url]').attr('data-next-page-url').replace(/(offset=).*?(&)/,"offset=" + offset + "&"))
-			loading = 0;
-			$(".post-list-loading").remove();
-			bindEvents();
-		})
-		}
-	}});
+		$(window).scroll(function() {
+		    //checks if you're at the bottom of the page and if you are it loads more posts
+		    if ($(window).scrollTop() + window.innerHeight >= $('[data-next-page-url]').height()) {
+		    	if (loading == 0 && aTbottom == false) {
+		    		$("[data-next-page-url]").append('<div class="post-list-loading"><img src="/assets/img/loading-image-green.gif" alt=""></div>');
+		    		loading = 1;
+		    		$.get($('[data-next-page-url]').attr('data-next-page-url'), function(data) {
+		    			if(data == ''){
+		    				aTbottom = true;
+		    				bindEvents();
+		    			}
+		    			$("[data-next-page-url]").append(data);
+		    			offset++;
+		    			$('[data-next-page-url]').attr('data-next-page-url', $('[data-next-page-url]').attr('data-next-page-url').replace(/(offset=).*?(&)/,"offset=" + offset + "&"))
+		    			loading = 0;
+		    			$(".post-list-loading").remove();
+		    			bindEvents();
+		    		})
+		    	}
+		    }
+		});
 	}
 }
 

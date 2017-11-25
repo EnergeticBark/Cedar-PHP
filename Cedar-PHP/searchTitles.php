@@ -51,6 +51,9 @@ if(!isset($_GET['query'])){
 			  <p class="note">Communities found for "'. htmlspecialchars($_GET['query'], ENT_QUOTES) .'."</p>
 			  <ul class="list community-list community-title-list">';
 
-	while ($titles = $searched_titles_result->fetch_assoc()){
-		printTitleInfo($titles);
-}}}}
+			while ($titles = $searched_titles_result->fetch_assoc()){
+				printTitleInfo($titles);
+			}
+		}
+	}
+}

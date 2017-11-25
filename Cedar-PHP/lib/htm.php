@@ -36,7 +36,8 @@ function printHeader($on_page) {
 	echo '<!DOCTYPE html>
 	<head>
 	'.(isset($tabTitle) ? '<title>'.$tabTitle.'</title>' : '').'
-	<link rel="stylesheet" type="text/css" href="/assets/css/style.css">';
+	<link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+	<script src="/assets/js/pace.min.js"></script>';
 
 	if(isset($_COOKIE['cedar_color_theme'])){
 		$HSL = explode(',', $_COOKIE['cedar_color_theme']);
@@ -79,10 +80,9 @@ function printHeader($on_page) {
 	}
 
 	echo '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<script src="/assets/js/jquery-3.2.1.min.js"></script>
-	<script src="/assets/js/pace.min.js"></script>
-	<script src="/assets/js/favico.js"></script>
-	<script async src="/assets/js/yeah.js"></script>
+	<script defer src="/assets/js/jquery-3.2.1.min.js"></script>
+	<script defer src="/assets/js/favico.js"></script>
+	<script defer src="/assets/js/yeah.js"></script>
 	<link rel="icon" type="image/png" sizes="96x96" href="/assets/img/favicon-96x96.png">
 	<meta property="og:site_name" content="Cedar">
 	<meta property="og:type" content="article">
@@ -168,15 +168,33 @@ function printPost($post, $reply_pre){
 	if ($post['deleted'] == 1) {
 		echo '<p class="deleted-message">
             Deleted by administrator.<br>
-            Post ID: '.$post['id'].'
+            Post ID: '. $post['id'] .'
           </p>';
 	}
 		
 	if (!empty($post['post_image'])) {
 		echo '<div class="screenshot-container"><img src="'.$post['post_image'].'"></div>';
 	}
+
+	$original_length = mb_strlen($post['text']);
+
+	if ($original_length > 199) {
+		$post['text'] = mb_substr($post['text'],0,200);
+	}
+
+	$post['text'] = htmlspecialchars($post['text'], ENT_QUOTES);
+
+	$post['text'] = preg_replace('|([\w\d]*)\s?(https?://([\d\w\.-]+\.[\w\.]{2,6})[^\s\]\[\<\>]*/?)|i', ' <a href="$2" class="post-link">$2</a>', $post['text']);
 		
-	echo '<div id="post-body">'.(mb_strlen($post['text']) > 199 ? nl2br(htmlspecialchars(mb_substr($post['text'],0,200), ENT_QUOTES)).'...' : nl2br(htmlspecialchars($post['text'], ENT_QUOTES))).'</div><div id="post-meta">';
+	echo '<div id="post-body">';
+
+	echo nl2br($post['text']);
+
+	if ($original_length > 199) {
+		echo '...';
+	}
+
+	echo '</div><div id="post-meta">';
 
 	$yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "post" AND yeahs.yeah_post = ?');
 	$yeah_count->bind_param('i', $post['id']);
@@ -185,7 +203,7 @@ function printPost($post, $reply_pre){
 	$yeah_amount = $result_count->fetch_assoc();
 					
 	echo '<button class="yeah symbol '. (!empty($_SESSION['signed_in']) ? (checkYeahAdded($post['id'], 'post', $_SESSION['user_id']) ? 'yeah-added' : '') : '') .'" '. (!empty($_SESSION['signed_in']) && !checkPostCreator($post['id'], $_SESSION['user_id']) ? '' : 'disabled') .' id="'. $post['id'] .'" data-track-label="post"><span class="yeah-button-text">'. (!empty($_SESSION['signed_in']) ? (checkYeahAdded($post['id'], 'post', $_SESSION['user_id']) ? 'Unyeah' : 'Yeah!') : 'Yeah!') .'</span></button>
-		<div class="empathy symbol"><span class="yeah-count">' . $yeah_amount['COUNT(yeah_by)'] . '</span></div>';
+		<div class="empathy symbol"><span class="yeah-count">'. $yeah_amount['COUNT(yeah_by)'] .'</span></div>';
 		
 	$reply_count = $dbc->prepare('SELECT COUNT(reply_id) FROM replies WHERE reply_post = ? AND deleted = 0');
 	$reply_count->bind_param('i', $post['id']);
@@ -366,11 +384,15 @@ function printReply($reply){
 	if ($reply['deleted'] == 1) {
 		echo '<p class="deleted-message">
             Deleted by administrator.<br>
-            Reply ID: '.$reply['reply_id'].'
+            Reply ID: '. $reply['reply_id'] .'
           </p>';
     }
     if ($reply['deleted'] == 0 || $reply['reply_by_id'] == $_SESSION['user_id']) {
-    	echo '<p class="reply-content-text">'.$reply['text'].'</p>'.(!empty($reply['reply_image'])?'<div class="screenshot-container"><img src="'.$reply['reply_image'].'"></div>':'').'<div class="reply-meta"><button class="yeah symbol '.(checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])?'yeah-added':'').'" '.(!empty($_SESSION['signed_in']) && !checkReplyCreator($reply['reply_id'], $_SESSION['user_id'])?'':'disabled').' id="'.$reply['reply_id'].'" data-track-label="reply"><span class="yeah-button-text">'.(checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])?'Unyeah':'Yeah!').'</span></button><div class="empathy symbol"><span class="yeah-count">'.$yeah_amount['COUNT(yeah_by)'].'</span></div></div>';
+		$reply['text'] = preg_replace('|([\w\d]*)\s?(https?://([\d\w\.-]+\.[\w\.]{2,6})[^\s\]\[\<\>]*/?)|i', '$1 <a href="$2" class="post-link">$2</a>', $reply['text']);
+
+    	echo '<p class="reply-content-text">'.$reply['text'].'</p>';
+
+    	echo (!empty($reply['reply_image'])?'<div class="screenshot-container"><img src="'.$reply['reply_image'].'"></div>':'').'<div class="reply-meta"><button class="yeah symbol '.(checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])?'yeah-added':'').'" '.(!empty($_SESSION['signed_in']) && !checkReplyCreator($reply['reply_id'], $_SESSION['user_id'])?'':'disabled').' id="'.$reply['reply_id'].'" data-track-label="reply"><span class="yeah-button-text">'.(checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])?'Unyeah':'Yeah!').'</span></button><div class="empathy symbol"><span class="yeah-count">'.$yeah_amount['COUNT(yeah_by)'].'</span></div></div>';
     }
     echo '</div></li>';
 }
@@ -392,14 +414,21 @@ function uploadImage($filename) {
     curl_close ($curl);
     $pms = json_decode($out,true);
     @$face=$pms['data']['link'] or $errors[] = 'Imgur upload failed';*/
+    global $dbc;
+
+    $get_keys = $dbc->prepare('SELECT * FROM cloudinary_keys ORDER BY RAND() LIMIT 1');
+	$get_keys->execute();
+    $key_result = $get_keys->get_result();
+	$keys = $key_result->fetch_assoc();
+
 	$handle = fopen($filename, "r");
 	$data = fread($handle, filesize($filename));
 	$pvars = array('file' => (exif_imagetype($filename) == 1 ? 'data:image/gif;base64,' : (exif_imagetype($filename) == 2 ? 'data:image/jpg;base64,' : (exif_imagetype($filename) == 3 ? 'data:image/png;base64,' : (exif_imagetype($filename) == 6 ? 'data:image/bmp;base64,' : '')))) . base64_encode($data),
-		'api_key' => '',
-		'upload_preset' => '');
+		'api_key' => $keys['api_key'],
+		'upload_preset' => $keys['preset']);
 	$timeout = 30;
 	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_URL, 'https://api.cloudinary.com/v1_1/[site]/auto/upload');
+	curl_setopt($curl, CURLOPT_URL, 'https://api.cloudinary.com/v1_1/'. $keys['site_name'] .'/auto/upload');
 	curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
 	curl_setopt($curl, CURLOPT_POST, 1);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
