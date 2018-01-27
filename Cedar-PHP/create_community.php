@@ -25,12 +25,12 @@ if($_SERVER['REQUEST_METHOD'] != 'POST'){
 				<ul class="settings-list">
 					<li>
 						<p class="settings-label">Name your community.</p>
-						<input class="textarea" placeholder="do what the text above says." type="text" maxlength="64" name="name" style="cursor: auto; height: auto;">
+						<input class="textarea" placeholder="Your community name." type="text" maxlength="64" name="name" style="cursor: auto; height: auto;">
 					</li>
 
 					<li>
 						<p class="settings-label">Write a description for your community.</p>
-						<textarea id="profile-text" class="textarea" name="profile_comment" maxlength="400" placeholder="ok"></textarea>
+						<textarea class="textarea" name="description" maxlength="400" placeholder="Your community description."></textarea>
 					</li>
 
 					<li>
@@ -54,4 +54,47 @@ if($_SERVER['REQUEST_METHOD'] != 'POST'){
 </div>
 
 <?php
+} else {
+	$error = false;
+	if (empty($_POST['name'])){
+		$error= true;
+	}
+	if (empty($_POST['description'])){
+		$error= true;
+	}
+
+	if (!$error){
+		$img=$_FILES['title_icon'];
+		if (empty($img['name'])) {
+			$error= true;
+		} else {
+			$filename = $img['tmp_name'];
+			$icon = uploadImage($filename);
+			if ($icon == 1) {
+				$error= true;
+			}
+		}
+
+		$img2=$_FILES['title_banner'];
+		if (empty($img2['name'])) {
+			$error= true;
+		} else {
+			$filename = $img2['tmp_name'];
+			$banner = uploadImage($filename);
+			if ($banner == 1) {
+				$error= true;
+			}
+		}
+
+		if(!$error){
+			$new_community = $dbc->prepare('INSERT INTO titles (title_id, title_name, title_desc, title_icon, title_banner, perm, type, user_made) VALUES (?,?,?,?,?,?,?,?)');
+			$id = mt_rand(10000000, 99999999);
+			$perm = 0;
+			$type = 6;
+			$user_made = 1;
+			$new_community->bind_param('issssiii', $id, $_POST['name'], $_POST['description'], $icon, $banner, $perm, $type, $user_made);
+			$new_community->execute();
+			echo('success');
+		}
+	}
 }

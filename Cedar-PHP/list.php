@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once('lib/htm.php');
 require_once('lib/connect.php');
 
@@ -61,12 +61,13 @@ if ((isset($_GET['offset']) && is_numeric($_GET['offset'])) && isset($_GET['date
     echo '</span>
     </span>
     '. ($title['type'] == 5 ? '<span class="news-community-badge">Announcement Community</span>' : '') .'
+		'. ($title['user_made'] == 1 ? '<span class="news-community-badge">User-Created Community</span>' : '') .'
     <h1 class="community-name"><a href="/titles/'. $title['title_id'] .'">'. $title['title_name'] .'</a></h1>
     </header>
       <div class="community-description js-community-description">
 		<p class="text js-truncated-text">'. $title['title_desc'] .'</p>
 	  </div>';
-	  
+
 	if(!empty($_SESSION['signed_in'])) {
 		echo '<button type="button" class="symbol button favorite-button';
 
@@ -78,7 +79,7 @@ if ((isset($_GET['offset']) && is_numeric($_GET['offset'])) && isset($_GET['date
 		if (!$favorite_result->num_rows == 0){
 			echo ' checked ';
 		}
-		
+
 		echo '"data-title-id="'. $title['title_id'] .'"><span class="favorite-button-text">Favorite</span></button>';
 	}
 
@@ -105,7 +106,7 @@ $get_posts->execute();
 $posts_result = $get_posts->get_result();
 
 if (!$posts_result->num_rows == 0) {
-	
+
 	while ($row = $posts_result->fetch_array()) {
 		echo '<div class="post trigger" data-href="/posts/'. $row['id'] .'">';
 		printPost($row, 1);

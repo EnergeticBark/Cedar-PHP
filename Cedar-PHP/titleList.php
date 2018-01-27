@@ -22,12 +22,16 @@ printHeader(3);
 		</div>
 
 		<div class="post-list-outline" style="text-align: center">
-			<h2 class="label">What is Cedar?!?!?</h2>
-			<p style="width: 90%; display: inine-block; padding: 10px;">cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar</p>
+			<h2 class="label">What is Cedar?</h2>
+			<p style="width: 90%; display: inine-block; padding: 10px;">Cedar is a Miiverse clone written by Seth and Eric. Cedar is open source: https://github.com/EnergeticBark/Cedar-PHP</p>
 		</div>
 
 		<button type="button" onclick="window.location.href='/titles/new'" class="symbol button create-button" style="padding: 14px 60px;">
 			<span class="favorite-button-text">Create Community</span>
+		</button>
+		<br>
+		<button type="button" onclick="window.location.href='/communities/categories/all'" class="symbol button create-button" style="padding: 14px 60px;">
+			<span class="favorite-button-text">All Communities</span>
 		</button>
 	</div>
 	<div class="community-main">
@@ -94,7 +98,7 @@ echo '
 <div>
   <ul class="list community-list community-card-list device-new-community-list">';
 
-$get_titles = $dbc->prepare('SELECT * FROM titles LIMIT 6');
+$get_titles = $dbc->prepare('SELECT * FROM titles WHERE user_made = 0 LIMIT 6');
 $get_titles->execute();
 $titles_result = $get_titles->get_result();
 
@@ -102,9 +106,25 @@ while ($titles = $titles_result->fetch_assoc()){
 	printTitleInfo($titles);
 }
 
-?>
+echo '
+</ul>';
 
-		</ul>
-		<a href="/communities/categories/all" class="big-button">Show More</a></div>
-	</div>
+echo '
+<h3 class="community-title"><span>User-Created Communities</span></h3>
+<div>
+  <ul class="list community-list community-card-list device-new-community-list">';
+
+$get_titles = $dbc->prepare('SELECT * FROM titles WHERE user_made = 1 LIMIT 6');
+$get_titles->execute();
+$titles_result = $get_titles->get_result();
+
+while ($titles = $titles_result->fetch_assoc()){
+	printTitleInfo($titles);
+}
+
+echo '
+</ul>
+</div>';
+
+?>
 </div>

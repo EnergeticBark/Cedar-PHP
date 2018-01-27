@@ -29,7 +29,7 @@ function printFace($face, $feeling) {
 	}
 }
 
-function printHeader($on_page) { 
+function printHeader($on_page) {
 	global $dbc;
 	global $tabTitle;
 
@@ -122,7 +122,7 @@ function printHeader($on_page) {
 		$get_user->execute();
 		$user_result = $get_user->get_result();
 		$user = $user_result->fetch_assoc();
-        
+
         echo '<li id="global-menu-list">
             <ul>
               <li id="global-menu-mymenu"'.($on_page == 1 ? ' class="selected"' : '').'><a href="/users/'.$user['user_name'].'/posts"><span class="icon-container"><img src="'. printFace($user['user_face'], 0) .'" alt="User Page"></span><span>User Page</span></a></li>
@@ -153,18 +153,18 @@ function printHeader($on_page) {
 function notify($to, $type, $post){
 	//types 0: post yeah, 1: reply yeah, 2: comment on your post, 3: posters comment, 4: follow.
 	global $dbc;
-	
+
 	$check_mergedusernews = $dbc->query('SELECT * FROM notifs WHERE notif_by = "'.$_SESSION['user_id'].'" AND notif_to = "'.$to.'" AND notif_type = '.$type.' '.($type != 4 ? 'AND notif_post = '.$post : '').' AND merged IS NOT NULL AND notif_date > NOW() - 7200 ORDER BY notif_date DESC');
 	if($check_mergedusernews->num_rows != 0) {
 		$result_update_mergedusernewsagain = $dbc->query('UPDATE notifs SET notif_read = "0", notif_date = CURRENT_TIMESTAMP WHERE notif_id = "'.$check_mergedusernews->fetch_assoc()['merged'].'"');
 	} else {
-		$result_update_newsmergesearch = $dbc->query('SELECT * FROM notifs WHERE notif_to = '.$to.' '.($type != 4 ? 'AND notif_post = '.$post : '').' AND notif_date > NOW() - 7200 AND notif_type = '.$type.' ORDER BY notif_date DESC');	
+		$result_update_newsmergesearch = $dbc->query('SELECT * FROM notifs WHERE notif_to = '.$to.' '.($type != 4 ? 'AND notif_post = '.$post : '').' AND notif_date > NOW() - 7200 AND notif_type = '.$type.' ORDER BY notif_date DESC');
 		if($result_update_newsmergesearch->num_rows != 0) {
 			$row_update_newsmergesearch = $result_update_newsmergesearch->fetch_assoc();
 			$result_newscreatemerge = $dbc->query('INSERT INTO notifs(notif_by, notif_to, '.($type != 4 ? 'notif_post, ' : '').'merged, notif_type, notif_read) VALUES ("'.$_SESSION['user_id'].'", "'.$to.'", '.($type != 4 ? '"'.$post.'", ' : '').'"'.$row_update_newsmergesearch['notif_id'].'", '.$type.', "0")');
 			$result_update_newsformerge = $dbc->query('UPDATE notifs SET notif_read = "0", notif_date = NOW() WHERE notif_id = "'.$row_update_newsmergesearch['notif_id'].'"');
 		} else {
-			$result_newscreate = $dbc->query('INSERT INTO notifs(notif_by, notif_to, '.($type != 4 ? 'notif_post,' : '').'notif_type, notif_read) VALUES ("'.$_SESSION['user_id'].'", "'.$to.'", '.($type != 4 ? '"'.$post.'",' : '').' '.$type.', "0")'); 	
+			$result_newscreate = $dbc->query('INSERT INTO notifs(notif_by, notif_to, '.($type != 4 ? 'notif_post,' : '').'notif_type, notif_read) VALUES ("'.$_SESSION['user_id'].'", "'.$to.'", '.($type != 4 ? '"'.$post.'",' : '').' '.$type.', "0")');
 		}
 	}
 }
@@ -182,7 +182,7 @@ function printPost($post, $reply_pre){
             Post ID: '. $post['id'] .'
           </p>';
 	}
-		
+
 	if (!empty($post['post_image'])) {
 		echo '<div class="screenshot-container"><img src="'. $post['post_image'] .'"></div>';
 	}
@@ -196,7 +196,7 @@ function printPost($post, $reply_pre){
 	$post['text'] = htmlspecialchars($post['text'], ENT_QUOTES);
 
 	$post['text'] = preg_replace('|([\w\d]*)\s?(https?://([\d\w\.-]+\.[\w\.]{2,6})[^\s\]\[\<\>]*/?)|i', ' <a href="$2" target="_blank" class="post-link">$2</a>', $post['text']);
-		
+
 	echo '<div id="post-body">';
 
 	echo nl2br($post['text']);
@@ -224,14 +224,14 @@ function printPost($post, $reply_pre){
 
 
 
-					
+
 	echo '<button class="yeah symbol';
 
 	if (!empty($_SESSION['signed_in']) && checkYeahAdded($post['id'], 'post', $_SESSION['user_id'])) {
 		echo ' yeah-added';
 	}
 
-	echo '"'; 
+	echo '"';
 
 	if (empty($_SESSION['signed_in']) || checkPostCreator($post['id'], $_SESSION['user_id'])) {
 		echo ' disabled ';
@@ -259,7 +259,7 @@ function printPost($post, $reply_pre){
 		echo ' nah-added';
 	}
 
-	echo '"'; 
+	echo '"';
 
 	if (empty($_SESSION['signed_in']) || checkPostCreator($post['id'], $_SESSION['user_id'])) {
 		echo ' disabled ';
@@ -278,18 +278,18 @@ function printPost($post, $reply_pre){
 
 
 
-	
+
 
 
 
 echo '<div class="empathy symbol" yeahs="'. $yeah_amount['COUNT(yeah_by)']  .'" nahs="'. $nah_amount['COUNT(nah_by)']  .'" title="'. $yeah_amount['COUNT(yeah_by)'] .' '. ($yeah_amount['COUNT(yeah_by)'] == 1 ? 'Yeah' : 'Yeahs') .' / '. $nah_amount['COUNT(nah_by)'] .' '. ($nah_amount['COUNT(nah_by)'] == 1 ? 'Nah' : 'Nahs') .'"><span class="yeah-count">'. $yeahs .'</span></div>';
-		
+
 	$reply_count = $dbc->prepare('SELECT COUNT(reply_id) FROM replies WHERE reply_post = ? AND deleted = 0');
 	$reply_count->bind_param('i', $post['id']);
 	$reply_count->execute();
 	$result_count = $reply_count->get_result();
 	$reply_amount = $result_count->fetch_assoc();
-		
+
 	echo '<div class="reply symbol"><span id="reply-count">'.$reply_amount['COUNT(reply_id)'].'</span></div></div>';
 
 	if ($post['deleted'] == 0) {
@@ -321,12 +321,12 @@ echo '<div class="empathy symbol" yeahs="'. $yeah_amount['COUNT(yeah_by)']  .'" 
 
 function checkPostCreator($post, $user_id){
 	global $dbc;
-	
+
 	$check_posted = $dbc->prepare('SELECT * FROM posts WHERE posts.id = ? AND posts.post_by_id = ? LIMIT 1');
 	$check_posted->bind_param('ss', $post, $user_id);
 	$check_posted->execute();
     $posted_result = $check_posted->get_result();
-	
+
 	if (!$posted_result->num_rows == 0){
 		return true;
 	} else {
@@ -336,12 +336,12 @@ function checkPostCreator($post, $user_id){
 
 function checkReplyCreator($reply, $user_id){
 	global $dbc;
-	
+
 	$check_posted = $dbc->prepare('SELECT * FROM replies WHERE replies.reply_id = ? AND replies.reply_by_id = ? LIMIT 1');
 	$check_posted->bind_param('ss', $reply, $user_id);
 	$check_posted->execute();
     $posted_result = $check_posted->get_result();
-	
+
 	if (!$posted_result->num_rows == 0){
 		return true;
 	} else {
@@ -352,12 +352,12 @@ function checkReplyCreator($reply, $user_id){
 
 function checkYeahAdded($post, $type, $user_id){
 	global $dbc;
-	
+
 	$check_yeahed = $dbc->prepare('SELECT * FROM yeahs WHERE yeahs.yeah_post = ? AND yeahs.type = ? AND yeahs.yeah_by = ?');
 	$check_yeahed->bind_param('sss', $post, $type, $user_id);
 	$check_yeahed->execute();
     $yeahed_result = $check_yeahed->get_result();
-	
+
 	if (!$yeahed_result->num_rows == 0){
 		return true;
 	} else {
@@ -367,12 +367,12 @@ function checkYeahAdded($post, $type, $user_id){
 
 function checkNahAdded($post, $type, $user_id){
 	global $dbc;
-	
+
 	$check_yeahed = $dbc->prepare('SELECT * FROM nahs WHERE nah_post = ? AND type = ? AND nah_by = ?');
 	$check_yeahed->bind_param('iii', $post, $type, $user_id);
 	$check_yeahed->execute();
     $yeahed_result = $check_yeahed->get_result();
-	
+
 	if (!$yeahed_result->num_rows == 0){
 		return true;
 	} else {
@@ -382,12 +382,12 @@ function checkNahAdded($post, $type, $user_id){
 
 function checkPostExists($post){
 	global $dbc;
-	
+
 	$check_post = $dbc->prepare('SELECT * FROM posts WHERE id = ? LIMIT 1');
 	$check_post->bind_param('s', $post);
 	$check_post->execute();
     $post_result = $check_post->get_result();
-	
+
 	if (!$post_result->num_rows == 0){
 		return true;
 	} else {
@@ -397,12 +397,12 @@ function checkPostExists($post){
 
 function checkReplyExists($reply){
 	global $dbc;
-	
+
 	$check_post = $dbc->prepare('SELECT * FROM replies WHERE reply_id = ? LIMIT 1');
 	$check_post->bind_param('s', $reply);
 	$check_post->execute();
     $post_result = $check_post->get_result();
-	
+
 	if (!$post_result->num_rows == 0){
 		return true;
 	} else {
@@ -451,6 +451,9 @@ function printTitleInfo($title){
 		case 4:
     	  echo 'Switch Games';
 		  break;
+		case 6:
+				echo 'User-Created Community';
+			break;
 		default:
 		  echo 'Special Community';
 	}
@@ -514,7 +517,7 @@ function printReply($reply){
 		echo ' yeah-added';
 	}
 
-	echo '"'; 
+	echo '"';
 
 	if (empty($_SESSION['signed_in']) || checkReplyCreator($reply['reply_id'], $_SESSION['user_id'])) {
 		echo ' disabled ';
@@ -542,7 +545,7 @@ function printReply($reply){
 		echo ' nah-added';
 	}
 
-	echo '"'; 
+	echo '"';
 
 	if (empty($_SESSION['signed_in']) || checkReplyCreator($reply['reply_id'], $_SESSION['user_id'])) {
 		echo ' disabled ';
