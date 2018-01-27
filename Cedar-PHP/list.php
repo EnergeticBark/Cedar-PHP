@@ -98,7 +98,7 @@ if ((isset($_GET['offset']) && is_numeric($_GET['offset'])) && isset($_GET['date
 	include 'postText.php';
 	echo '<div class="body-content" id="community-post-list"><div class="list post-list" data-next-page-url="/titles/'. $title['title_id'] .'?offset=1&dateTime='. date("Y-m-d H:i:s") .'">';
 
-	$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN users ON user_id = post_by_id WHERE post_title = ? AND deleted = 0 ORDER BY date_time DESC LIMIT 25');
+	$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN users ON user_id = post_by_id INNER JOIN profiles ON users.user_id = profiles.user_id WHERE post_title = ? AND deleted = 0 ORDER BY date_time DESC LIMIT 25');
 	$get_posts->bind_param('i', $title_id);
 }
 $get_posts->execute();

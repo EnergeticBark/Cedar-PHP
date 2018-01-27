@@ -27,25 +27,58 @@ if (!(($title['perm'] == 1 && $user['user_level'] > 1) || $title['perm'] == NULL
 }
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST'){
+	
 	echo '<form id="post-form" method="post" action="/postText.php" enctype="multipart/form-data">
-	<div class="post-count-container">
-	  <input type="hidden" name="title_id" value="'.$title['title_id'].'">
-	  <div class="textarea-feedback" style="float:left;">
-	    <font color="#646464" style="font-size: 13px; padding: 0 3px 0 7px;">800</font> Characters Remaining
-	  </div>
-	</div>';
+		<div class="post-count-container">
+			<input type="hidden" name="title_id" value="'.$title['title_id'].'">
+			<div class="textarea-feedback" style="float:left;">
+				<font color="#646464" style="font-size: 13px; padding: 0 3px 0 7px;">800</font> Characters Remaining
+			</div>
+		</div>';
 
 	if (!strpos($user['user_face'], "imgur") && !strpos($user['user_face'], "cloudinary")) { 
-		echo '<div class="feeling-selector js-feeling-selector test-feeling-selector"><label class="symbol feeling-button feeling-button-normal checked"><input type="radio" name="feeling_id" value="0" checked=""><span class="symbol-label">normal</span></label><label class="symbol feeling-button feeling-button-happy"><input type="radio" name="feeling_id" value="1"><span class="symbol-label">happy</span></label><label class="symbol feeling-button feeling-button-like"><input type="radio" name="feeling_id" value="2"><span class="symbol-label">like</span></label><label class="symbol feeling-button feeling-button-surprised"><input type="radio" name="feeling_id" value="3"><span class="symbol-label">surprised</span></label><label class="symbol feeling-button feeling-button-frustrated"><input type="radio" name="feeling_id" value="4"><span class="symbol-label">frustrated</span></label><label class="symbol feeling-button feeling-button-puzzled"><input type="radio" name="feeling_id" value="5"><span class="symbol-label">puzzled</span></label></div>';
-	}
+		
+		?>
+		<div class="feeling-selector js-feeling-selector test-feeling-selector">
+			<label class="symbol feeling-button feeling-button-normal checked">
+				<input type="radio" name="feeling_id" value="0" checked="">
+				<span class="symbol-label">normal</span>
+			</label>
+			<label class="symbol feeling-button feeling-button-happy">
+				<input type="radio" name="feeling_id" value="1">
+				<span class="symbol-label">happy</span>
+			</label>
+			<label class="symbol feeling-button feeling-button-like">
+				<input type="radio" name="feeling_id" value="2">
+				<span class="symbol-label">like</span>
+			</label>
+			<label class="symbol feeling-button feeling-button-surprised">
+				<input type="radio" name="feeling_id" value="3">
+				<span class="symbol-label">surprised</span>
+			</label>
+			<label class="symbol feeling-button feeling-button-frustrated">
+				<input type="radio" name="feeling_id" value="4">
+				<span class="symbol-label">frustrated</span>
+			</label>
+			<label class="symbol feeling-button feeling-button-puzzled">
+				<input type="radio" name="feeling_id" value="5">
+				<span class="symbol-label">puzzled</span>
+			</label>
+		</div>
+		<?php
 
-	echo '<div class="textarea-container">
-	  <textarea name="text_data" class="textarea-text textarea" maxlength="800" placeholder="Share your thoughts in a post to this community."></textarea>
-	  </div>Image upload: <input type="file" name="image" accept="image/*">
-	  <div class="form-buttons">
-	    <input type="submit" name="submit" class="black-button post-button disabled" value="Send" disabled="">
-	  </div>
-	</form>';
+	}
+	
+	?>
+		<div class="textarea-container">
+			<textarea name="text_data" class="textarea-text textarea" maxlength="800" placeholder="Share your thoughts in a post to this community."></textarea>
+		</div>
+		Image upload: <input type="file" name="image" accept="image/*">
+		<div class="form-buttons">
+			<input type="submit" name="submit" class="black-button post-button disabled" value="Send" disabled="">
+		</div>
+	</form>
+	<?php
 
 } else {
 	$errors = array();
@@ -69,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST'){
 		//imageUpload() returns 1 if it fails and the image URL if successful
 		$image = uploadImage($filename);
 		if ($image == 1) {
-			$errors[] = 'Image upload failed';
+			$errors[] = 'Image upload failed.';
 		}
 	}
 
@@ -88,6 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST'){
 		echo '<div class="post trigger" data-href="/posts/'. $post['id'] .'" style="display: none;">';
 		printPost($post, 0);
 	} else {
-		echo '<script type="text/javascript">alert("'. $errors[0] .'");</script>';
+		http_response_code(201);
+		echo '<script type="text/javascript">popup("Error", "'. $errors[0] .'");</script>';
 	}
 }

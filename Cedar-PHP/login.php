@@ -56,6 +56,7 @@ if(empty($_SESSION['signed_in'])){
 			echo '<div id="main-body">redirecting';
 			$_SESSION['signed_in'] = true;
 			$_SESSION['user_id'] = $user['user_id'];
+
 			$update_ip = $dbc->prepare('UPDATE users SET ip = ? WHERE user_id = ?');
 			$update_ip->bind_param('si', $_SERVER['REMOTE_ADDR'], $_SESSION['user_id']);
 			$update_ip->execute();

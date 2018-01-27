@@ -1218,7 +1218,7 @@ button {
     margin-right: 3px;
 }
 
-#post-meta .yeah-added + .empathy:before, .reply-meta .yeah-added + .empathy:before {
+#post-meta .yeah-added + .nah + .empathy:before, .reply-meta .yeah-added + .nah + .empathy:before {
     color: #5ac800;
 }
 
@@ -1259,7 +1259,7 @@ button {
     vertical-align: middle;
 }
 
-#post-meta .yeah-added + .empathy, .reply-meta .yeah-added + .empathy {
+#post-meta .yeah-added + .nah + .empathy, .reply-meta .yeah-added + .nah + .empathy {
     color: #3caa00;
 }
 
@@ -2500,9 +2500,67 @@ form.search input[type="text"]:focus {
     content: "Y";
 }
 
+.nah {
+	margin-left: 5px;
+	float: left;
+	padding: 3px 5px 2px;
+	color: #323232;
+	font-size: 12px;
+    border-bottom-color: #ccc;
+    background: #fff;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 0 #ffffff;
+}
+
+.nah:disabled {
+	color: #dddddd;
+    cursor: default;
+}
+
+.nah:hover {
+	text-decoration: none;
+    -webkit-box-shadow: inset 0 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.1);
+    -moz-box-shadow: inset 0 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.1);
+    -ms-box-shadow: inset 0 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.1);
+    -o-box-shadow: inset 0 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: inset 0 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nah:hover:disabled {
+	box-shadow: inset 0 1px 0 #ffffff;
+}
+
+.nah:before {
+	content: '1';
+	font-size: 16px;
+	color: #969696;
+	margin-right: 2px;
+	margin-top: -3px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.nah:disabled:before {
+    color: #dddddd;
+}
+
+.empathy {
+	user-select: none;
+}
+
+
+#post-meta .yeah + .nah-added + .empathy, .reply-meta .yeah + .nah-added + .empathy {
+    color: #414141;
+}
+
+#post-meta .yeah + .nah-added + .empathy:before, .reply-meta .yeah + .nah-added + .empathy:before {
+    color: #414141;
+}
+
 .sidebar-setting .sidebar-menu-info:before {
-    content: "w";
-    color: #5ac800;
+	content: "w";
+	color: #5ac800;
 }
 
 .sidebar-setting .sidebar-menu-setting:before {
@@ -2884,6 +2942,16 @@ form.search input[type="text"]:focus {
 
 #identified-user-banner a:hover{
 	text-decoration: none;
+}
+
+.create-button:before {
+    content: "w";
+    font-size: 20px;
+    margin: -2px 5px 0 0;
+    line-height: 11px;
+    color: #5ac800;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 form.search {

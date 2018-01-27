@@ -13,8 +13,8 @@ if (!empty($_SESSION['signed_in'])) {
 
 		if (isset($action)){
 			if ($action == 'delete_user') {
-				$get_user = $dbc->prepare('SELECT * FROM users WHERE user_name = ? LIMIT 1');
-				$get_user->bind_param('s', $_POST['user_id']);
+				$get_user = $dbc->prepare('SELECT * FROM users WHERE user_id = ? LIMIT 1');
+				$get_user->bind_param('i', $_POST['user_id']);
 				$get_user->execute();
 				$user_result = $get_user->get_result();
 				if ($user_result->num_rows == 0){
@@ -125,7 +125,8 @@ if (!empty($_SESSION['signed_in'])) {
 				header('HTTP/1.0 404 Forbidden');
 			}
 		} else {
-			echo '
+			?>
+
 		<!DOCTYPE html>
 
 		<html lang="en">
@@ -149,6 +150,7 @@ if (!empty($_SESSION['signed_in'])) {
                   <div class="card-body">
                     <h4 class="card-title">Delete User</h4>
                     <p class="card-text">Permanently delete a user and all of their posts.</p>
+                    <p>A users unique User ID can be found on their profile.</p>
                     <div class="alert alert-danger" role="alert">
                       Note: This action cannot be undone.
                     </div>
@@ -200,13 +202,14 @@ if (!empty($_SESSION['signed_in'])) {
 
             </div>
 
-	        <script src="/jquery-3.2.1.min.js"></script>
+	        <script src="/assets/js/jquery-3.2.1.min.js"></script>
 	        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 	        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 	        <script src="/admin/js/admin.js"></script>
 	      </body>
 	    </html>
-	    ';
+
+	    <?php
 	}
 
 	} else {

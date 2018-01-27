@@ -17,7 +17,7 @@ userContent($user, "");
 sidebarSetting();
 echo '</div><div class="main-column"><div class="post-list-outline"><h2 class="label">Notifications</h2><div class="list news-list">';
 
-$get_notifs = $dbc->prepare('SELECT * FROM notifs WHERE notif_to = ? AND merged IS NULL ORDER BY notif_date DESC LIMIT 50');
+$get_notifs = $dbc->prepare('SELECT * FROM notifs WHERE notif_to = ? AND merged IS NULL ORDER BY notif_date DESC LIMIT 25');
 $get_notifs->bind_param('i', $_SESSION['user_id']);
 $get_notifs->execute();
 $notifs_result = $get_notifs->get_result();

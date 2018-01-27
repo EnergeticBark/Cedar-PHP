@@ -22,10 +22,9 @@ if(!$dbc) mysql_machine_broke();
 //sets timezones
 @$dbc->query('SET time_zone = "-5:00";') || mysql_machine_broke();
 date_default_timezone_set('America/New_York');
-session_name('graham');
 if(session_status() == PHP_SESSION_NONE) {
-	session_set_cookie_params(strtotime('+99 days'));
-	ini_set('session.gc_maxlifetime', strtotime('+99 days'));
+	session_name('graham');
+	session_set_cookie_params(30 * 6000000, "/");
 	session_start();
 }
 

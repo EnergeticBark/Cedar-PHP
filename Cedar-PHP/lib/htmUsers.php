@@ -77,7 +77,7 @@ function userContent($user, $selected){
           </a>
         </div>
         '.(isset($user['organization'])?'<span class="user-organization">'.$user['organization'].'</span>':'').'
-        <a href="/users/'. $user['user_name'] .'/posts" class="nick-name">'. htmlspecialchars($user['nickname'], ENT_QUOTES) .'</a>
+        <a href="/users/'. $user['user_name'] .'/posts" '.(isset($user['name_color']) ? 'style="color: '. $user['name_color'] .'"' : '').' class="nick-name">'. htmlspecialchars($user['nickname'], ENT_QUOTES) .'</a>
         <p class="id-name">'. $user['user_name'] .'</p>
       </div>';
 
@@ -163,6 +163,12 @@ function userInfo($user){
 	$prof_result = $get_prof->get_result();
 	$profile = $prof_result->fetch_assoc();
 
+	$get_user_level = $dbc->prepare('SELECT user_level FROM users WHERE user_id = ?');
+	$get_user_level->bind_param('i', $_SESSION['user_id']);
+	$get_user_level->execute();
+	$user_level_result = $get_user_level->get_result();
+	$user_level = $user_level_result->fetch_assoc();
+
 	$get_yeahs = $dbc->prepare('SELECT COUNT(yeah_id) FROM yeahs WHERE yeah_post IN (SELECT id FROM posts WHERE post_by_id = ?) OR yeah_post IN (SELECT reply_id FROM replies WHERE reply_by_id = ?)');
 	$get_yeahs->bind_param('ii', $user['user_id'], $user['user_id']);
 	$get_yeahs->execute();
@@ -221,9 +227,16 @@ function userInfo($user){
 	  <div class="note"><span class="test-game-skill symbol'.(strtotime($profile['last_online'])>time()-35?'">On':' offline">Off').'line</span></div>
     </div>
 
-    <div class="yeahs-received"><h4><span>Yeahs Received</span></h4><div class="note">'.number_format($yeahs['COUNT(yeah_id)']).'</div></div>
+    <div class="yeahs-received'. ($user_level['user_level'] > 0 ? ' data-content' : '') .'"><h4><span>Yeahs Received</span></h4><div class="note">'. number_format($yeahs['COUNT(yeah_id)']) .'</div></div>';
 
-    </div></div>
+
+    if ($user_level['user_level'] > 0) {
+    	echo '<div class="user-id data-content"><h4><span>User ID</span></h4><div class="note">'. $user['user_id'] .'</div></div>
+    	<div class="ip"><h4><span>IP Address</span></h4><div class="note">'. $user['ip'] .'</div></div>';
+    }
+
+
+    echo '</div></div>
 
     <div class="sidebar-container sidebar-favorite-community">
       <h4><a href="/'.(!empty($_SESSION['signed_in']) && ($_SESSION['user_id'] == $user['user_id']) ? 'communities' : 'users/'.$user['user_name']).'/favorites'.'" class="symbol favorite-community-button"><span>Favorite Communities</span></a></h4>

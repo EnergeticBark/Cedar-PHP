@@ -18,7 +18,7 @@ if ($user_result->num_rows == 0){
 
 		$tabTitle = 'Cedar - '. htmlspecialchars($user['nickname'], ENT_QUOTES) .'\'s Profile';
 
-		if (($_SESSION['user_id'] == $user['user_id']) || empty($_SESSION['signed_in'])) {printHeader(1);} else {printHeader('');}
+		if (empty($_SESSION['signed_in']) || $_SESSION['user_id'] == $user['user_id']) {printHeader(1);} else {printHeader('');}
 
 		echo '<script>var loadOnScroll=true;</script><div id="main-body"><div id="sidebar" class="user-sidebar">';
 
@@ -32,7 +32,7 @@ if ($user_result->num_rows == 0){
 		<h2 class="label">'. htmlspecialchars($user['nickname'], ENT_QUOTES) .'\'s Posts</h2>
 		<div class="list post-list js-post-list" data-next-page-url="/users/'. $user['user_name'] .'/posts?offset=1&dateTime='.date("Y-m-d H:i:s").'">';
 
-		if ($user['user_id'] == $_SESSION['user_id']) {
+		if (!empty($_SESSION['signed_in']) && $user['user_id'] == $_SESSION['user_id']) {
 			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND deleted < 2 ORDER BY date_time DESC LIMIT 25');
 		} else {
 			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND deleted = 0 ORDER BY date_time DESC LIMIT 25');

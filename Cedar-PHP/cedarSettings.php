@@ -27,7 +27,7 @@ if($_SERVER['REQUEST_METHOD'] != 'POST'){
 	          <p class="settings-label"><label for="select_notify.empathy_notice_opt_out">Change the theme color.</label></p>
 	          <div class="select-content">
 	            <div class="select-button">
-	              <input type="color" name="theme-color" value="'.(isset($_COOKIE['hex_color_theme'])?$_COOKIE['hex_color_theme']:'#000000').'" style="height: 24px;margin-right: 5px;vertical-align: middle;">
+	              <input type="color" name="theme-color" value="'. (isset($_COOKIE['hex_color_theme']) ? $_COOKIE['hex_color_theme'] : '#000000') .'" style="height: 24px;margin-right: 5px;vertical-align: middle;">
 	              <input type="button" value="reset to default" onclick="$(\'input[type=\\\'color\\\']\').remove();" style="
 	              border: none;
 	              background-color: #efefef;
@@ -44,8 +44,8 @@ if($_SERVER['REQUEST_METHOD'] != 'POST'){
 	          <div class="select-content">
 	            <div class="select-button">
 	              <select name="yeah_notifs" id="yeah_notifs">
-	                <option value="1"'.($user['yeah_notifs']==1?' selected':'').'>Receive</option>
-	                <option value="0"'.($user['yeah_notifs']==0?' selected':'').'>Don\'t Receive</option>
+	                <option value="1"'. ($user['yeah_notifs'] == 1 ? ' selected' : '') .'>Receive</option>
+	                <option value="0"'. ($user['yeah_notifs'] == 0 ? ' selected' : '') .'>Don\'t Receive</option>
 	              </select>
 	            </div>
 	          </div>

@@ -87,13 +87,68 @@ if ($user_result->num_rows == 0){
 
 			echo '<div id="post-body">' . (mb_strlen($replies['text']) > 199 ? mb_substr($replies['text'],0,200) . '...' : $replies['text']) . '</div><div id="post-meta">';
 
-			$yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "reply" AND yeah_post = ?');
-			$yeah_count->bind_param('i', $replies['reply_id']);
-			$yeah_count->execute();
-			$result_count = $yeah_count->get_result();
-			$yeah_amount = $result_count->fetch_assoc();
+			    	$yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "reply" AND yeah_post = ?');
+			    	$yeah_count->bind_param('i', $replies['reply_id']);
+			    	$yeah_count->execute();
+			    	$result_count = $yeah_count->get_result();
+			    	$yeah_amount = $result_count->fetch_assoc();
 
-			echo '<button class="yeah symbol '. (checkYeahAdded($replies['reply_id'], 'reply', $_SESSION['user_id']) ? 'yeah-added' : '') .'" '. (!empty($_SESSION['signed_in']) && !checkReplyCreator($replies['reply_id'], $_SESSION['user_id']) ? '' : 'disabled') .' id="'. $replies['reply_id'] .'" data-track-label="reply"><span class="yeah-button-text">'. (checkYeahAdded($replies['reply_id'], 'reply', $_SESSION['user_id']) ? 'Unyeah' : 'Yeah!') .'</span></button><div class="empathy symbol"><span class="yeah-count">' . $yeah_amount['COUNT(yeah_by)'] . '</span></div></div></div></div>';
+			    	$nah_count = $dbc->prepare('SELECT COUNT(nah_by) FROM nahs WHERE type = 1 AND nah_post = ?');
+			    	$nah_count->bind_param('i', $replies['reply_id']);
+			    	$nah_count->execute();
+			    	$result_count = $nah_count->get_result();
+			    	$nah_amount = $result_count->fetch_assoc();
+
+			    	$yeahs = $yeah_amount['COUNT(yeah_by)'] - $nah_amount['COUNT(nah_by)'];
+
+			echo '<button class="yeah symbol';
+
+			if (!empty($_SESSION['signed_in']) && checkYeahAdded($replies['reply_id'], 'reply', $_SESSION['user_id'])) {
+				echo ' yeah-added';
+			}
+
+			echo '"'; 
+
+			if (empty($_SESSION['signed_in']) || checkReplyCreator($replies['reply_id'], $_SESSION['user_id'])) {
+				echo ' disabled ';
+			}
+
+			echo 'id="'. $replies['reply_id'] .'" data-track-label="reply"><span class="yeah-button-text">';
+
+			if (!empty($_SESSION['signed_in']) && checkYeahAdded($replies['reply_id'], 'reply', $_SESSION['user_id'])) {
+				echo 'Unyeah';
+			} else {
+				echo 'Yeah!';
+			}
+
+			echo '</span></button>';
+
+
+			echo '<button class="nah symbol';
+
+			if (!empty($_SESSION['signed_in']) && checkNahAdded($replies['reply_id'], 1, $_SESSION['user_id'])) {
+				echo ' nah-added';
+			}
+
+			echo '"'; 
+
+			if (empty($_SESSION['signed_in']) || checkReplyCreator($replies['reply_id'], $_SESSION['user_id'])) {
+				echo ' disabled ';
+			}
+
+			echo 'id="'. $replies['reply_id'] .'" data-track-label="1"><span class="nah-button-text">';
+
+			if (!empty($_SESSION['signed_in']) && checkNahAdded($replies['reply_id'], 1, $_SESSION['user_id'])) {
+				echo 'Un-nah.';
+			} else {
+				echo 'Nah...';
+			}
+
+			echo '</span></button>';
+
+
+
+			echo '<div class="empathy symbol" yeahs="'. $yeah_amount['COUNT(yeah_by)']  .'" nahs="'. $nah_amount['COUNT(nah_by)']  .'" title="'. $yeah_amount['COUNT(yeah_by)'] .' '. ($yeah_amount['COUNT(yeah_by)'] == 1 ? 'Yeah' : 'Yeahs') .' / '. $nah_amount['COUNT(nah_by)'] .' '. ($nah_amount['COUNT(nah_by)'] == 1 ? 'Nah' : 'Nahs') .'"><span class="yeah-count">'. $yeahs .'</span></div></div></div></div>';
 		}
 
 	} else {

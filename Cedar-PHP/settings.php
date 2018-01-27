@@ -42,23 +42,7 @@ if(empty($_SESSION['signed_in'])){
 
 		userContent($user, "settings");
 
-		echo '<div class="sidebar-setting sidebar-container">
-		  <div class="sidebar-post-menu">
-		    <a href="/users/'. $user['user_name'] .'/posts" class="sidebar-menu-post with-count symbol">
-		      <span>All Posts</span>
-		      <span class="post-count">
-		        <span class="test-post-count">'. $post_amount['COUNT(id)'] .'</span>
-		      </span>
-		    </a>
-
-		    <a href="/users/'. $user['user_name'] .'/yeahs" class="sidebar-menu-empathies with-count symbol">
-		      <span>Yeahs</span>
-		      <span class="post-count">
-		        <span class="test-empathy-count">'. $yeah_amount['COUNT(yeah_by)'] .'</span>
-		      </span>
-		    </a>
-		  </div>
-		</div>';
+        userSidebarSetting($user, 0);
 
 		userInfo($user);
 
@@ -104,6 +88,22 @@ if(empty($_SESSION['signed_in'])){
 		        <input class="textarea" placeholder="Enter the NNID for the mii you want to use." type="text" maxlength="16" name="face" style="cursor: auto; height: auto;" />
 		      </div>
 		    </li>
+
+            <li>
+              <p class="settings-label"><label for="select_notify.empathy_notice_opt_out">Change the color of your name.</label></p>
+              <div class="select-content">
+                <div class="select-button">
+                  <input type="color" name="name-color" value="'. (isset($user['name_color']) ? $user['name_color'] : '#ffffff').'" style="height: 24px;margin-right: 5px;vertical-align: middle;">
+                  <input type="button" value="reset to default" onclick="$(\'input[type=\\\'color\\\']\').remove();" style="
+                  border: none;
+                  background-color: #efefef;
+                  padding: 5px;
+                  border-radius: 3px;
+                  border: #aeaeae 1px solid;
+                  ">
+                </div>
+              </div>
+            </li>
 
 		    <li>
 		      <p class="settings-label"><label for="select_country">Country</label></p>
@@ -174,7 +174,7 @@ if(empty($_SESSION['signed_in'])){
   </li>
 </ul>
 <div class="form-buttons">
-<input type="submit" name="submit" class="black-button apply-button" value="Save Settings" /></div></form></div></div></div></div><div class="dialog active-dialog modal-window-open none mask"><div class="dialog-inner"><div class="window"><h1 class="window-title"></h1><div class="window-body"><p class="window-body-content">Settings saved.</p><div class="form-buttons"><button class="ok-button black-button" type="button" data-event-type="ok">OK</button></div></div></div></div></div></div>';
+<input type="submit" name="submit" class="black-button apply-button" value="Save Settings" /></div></form></div></div></div></div>';
     } else {
 
     	if(!empty($_POST['name'])){
@@ -223,8 +223,19 @@ if(empty($_SESSION['signed_in'])){
     		$user_change->execute();
     	}
 
-    	if (isset($_POST['face'])){
-    		if ($_POST['face-type'] == 2){
+        if (isset($_POST['name-color']) && $_POST['name-color'] !== '#ffffff') {
+            $user_change = $dbc->prepare('UPDATE profiles SET name_color = ? WHERE user_id = ?');
+            $user_change->bind_param('si', $_POST['name-color'], $_SESSION['user_id']);
+            $user_change->execute();
+        } else {
+            $user_change = $dbc->prepare('UPDATE profiles SET name_color = NULL WHERE user_id = ?');
+            $user_change->bind_param('i', $_SESSION['user_id']);
+            $user_change->execute();
+        }
+
+
+    	if (isset($_POST['face'])) {
+    		if ($_POST['face-type'] == 2) {
 
     			$ch = curl_init();
     			curl_setopt_array($ch, array(

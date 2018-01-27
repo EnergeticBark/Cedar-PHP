@@ -17,7 +17,7 @@ if (!$reply_result->num_rows == 0){
     $post_result = $search_post->get_result();
 	$post = $post_result->fetch_assoc();
 
-	$get_user = $dbc->prepare('SELECT user_name, nickname, user_face, user_level FROM users WHERE users.user_id = ?');
+	$get_user = $dbc->prepare('SELECT * FROM users WHERE users.user_id = ?');
     $get_user->bind_param('i', $post['post_by_id']);
     $get_user->execute();
     $user_result = $get_user->get_result();
@@ -28,9 +28,9 @@ if (!$reply_result->num_rows == 0){
     if ($reply['deleted'] == 1 && $reply['reply_by_id'] != $_SESSION['user_id']) {
         echo '<div class="no-content track-error" data-track-error="deleted"><div><p class="deleted-message">
             Deleted by administrator.<br>
-            Reply ID: '.$reply['reply_id'].'
+            Reply ID: '. $reply['reply_id'] .'
           </p></div></div>';
-    } elseif ($reply['deleted'] == 2){
+    } elseif ($reply['deleted'] == 2) {
 	    echo '<div class="no-content track-error" data-track-error="deleted"><div><p>Deleted by the author of the comment.</p></div></div>';
     } else {
 
@@ -44,7 +44,7 @@ if (!$reply_result->num_rows == 0){
     	<div class="main-column"><div class="post-list-outline">
     	  <a class="post-permalink-button info-ticker" href="/posts/'. $post['id'] .'">
     	    <span class="icon-container"><img src="'. printFace($user['user_face'], $post['feeling_id']) .'" id="icon"></span>
-    	    <span>View <span class="post-user-description">'. htmlspecialchars($user['nickname'], ENT_QUOTES) .'\'s post ('. (mb_strlen($post['text']) > 17 ? htmlspecialchars(mb_substr($post['text'],0,17), ENT_QUOTES) . '...' : htmlspecialchars($post['text'], ENT_QUOTES)) .')</span> for this comment.</span>
+    	    <span>View <span class="post-user-description">'. htmlspecialchars($user['nickname'], ENT_QUOTES) .'\'s post ('. (mb_strlen($post['text']) > 17 ? htmlspecialchars(mb_substr($post['text'], 0, 17), ENT_QUOTES) . '...' : htmlspecialchars($post['text'], ENT_QUOTES)) .')</span> for this comment.</span>
     	  </a>
     	</div>
     	<div class="post-list-outline">
@@ -54,16 +54,16 @@ if (!$reply_result->num_rows == 0){
     	        <img src="'. $title['title_icon'] .'" class="community-icon">'. $title['title_name'] .'</a></p>
               <div id="user-content">';
 
-        $get_user = $dbc->prepare('SELECT user_name, nickname, user_face, user_level FROM users WHERE users.user_id = ?');
+        $get_user = $dbc->prepare('SELECT * FROM users INNER JOIN profiles ON profiles.user_id = users.user_id WHERE users.user_id = ?');
         $get_user->bind_param('i', $reply['reply_by_id']);
         $get_user->execute();
         $user_result = $get_user->get_result();
         $user = $user_result->fetch_assoc();
 
         echo '<title>Cedar - '. htmlspecialchars($user['nickname'], ENT_QUOTES) .'\'s Comment</title>
-        <a href="/users/'. $user['user_name'] .'/posts" class="icon-container'.($user['user_level']>1?' verified':'').'"><img src="'. printFace($user['user_face'], $reply['feeling_id']) .'" id="icon"></a>
+        <a href="/users/'. $user['user_name'] .'/posts" class="icon-container'.($user['user_level'] > 1 ? ' verified' : '').'"><img src="'. printFace($user['user_face'], $reply['feeling_id']) .'" id="icon"></a>
         <div class="user-name-content">
-          <p class="user-name"><a href="/users/'. $user['user_name'] .'/posts">'. htmlspecialchars($user['nickname'], ENT_QUOTES) .'</a></p>
+          <p class="user-name"><a href="/users/'. $user['user_name'] .'/posts" '.(isset($user['name_color']) ? 'style="color: '. $user['name_color'] .'"' : '').'>'. htmlspecialchars($user['nickname'], ENT_QUOTES) .'</a></p>
           <p class="timestamp-container">
             <span class="timestamp">'. humanTiming(strtotime($reply['date_time'])) .'</span>
           </p>
@@ -73,7 +73,7 @@ if (!$reply_result->num_rows == 0){
       if ($reply['deleted'] == 1) {
         echo '<p class="deleted-message">
             Deleted by administrator.<br>
-            Reply ID: '.$reply['reply_id'].'
+            Reply ID: '. $reply['reply_id'] .'
           </p>';
     }
 
@@ -87,21 +87,67 @@ if (!$reply_result->num_rows == 0){
         echo '<div id="post-meta">';
 
         //yeahs
+        
         $yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "reply" AND yeah_post = ?');
         $yeah_count->bind_param('i', $reply['reply_id']);
         $yeah_count->execute();
         $result_count = $yeah_count->get_result();
         $yeah_amount = $result_count->fetch_assoc();
 
-        echo '
-        <button class="yeah symbol '. (checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id']) ? 'yeah-added' : '') .'" '. (!empty($_SESSION['signed_in']) && !checkReplyCreator($reply['reply_id'], $_SESSION['user_id']) ? '' : 'disabled') .' id="'. $reply['reply_id'] .'" data-track-label="reply">
-          <span class="yeah-button-text">'. (checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id']) ? 'Unyeah' : 'Yeah!') .'</span>
-        </button>
+        $nah_count = $dbc->prepare('SELECT COUNT(nah_by) FROM nahs WHERE type = 1 AND nah_post = ?');
+        $nah_count->bind_param('i', $reply['reply_id']);
+        $nah_count->execute();
+        $result_count = $nah_count->get_result();
+        $nah_amount = $result_count->fetch_assoc();
 
-        <div class="empathy symbol">
-          <span class="yeah-count">' . $yeah_amount['COUNT(yeah_by)'] . '</span>
-		</div>
-	  </div>';
+        $yeahs = $yeah_amount['COUNT(yeah_by)'] - $nah_amount['COUNT(nah_by)'];
+
+        echo '<button class="yeah symbol';
+
+            if (!empty($_SESSION['signed_in']) && checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])) {
+                echo ' yeah-added';
+            }
+
+            echo '"'; 
+
+            if (empty($_SESSION['signed_in']) || checkReplyCreator($reply['reply_id'], $_SESSION['user_id'])) {
+                echo ' disabled ';
+            }
+
+            echo 'id="'. $reply['reply_id'] .'" data-track-label="reply"><span class="yeah-button-text">';
+
+            if (!empty($_SESSION['signed_in']) && checkYeahAdded($reply['reply_id'], 'reply', $_SESSION['user_id'])) {
+                echo 'Unyeah';
+            } else {
+                echo 'Yeah!';
+            }
+
+            echo '</span></button>';
+
+
+            echo '<button class="nah symbol';
+
+            if (!empty($_SESSION['signed_in']) && checkNahAdded($reply['reply_id'], 1, $_SESSION['user_id'])) {
+                echo ' nah-added';
+            }
+
+            echo '"'; 
+
+            if (empty($_SESSION['signed_in']) || checkReplyCreator($reply['reply_id'], $_SESSION['user_id'])) {
+                echo ' disabled ';
+            }
+
+            echo 'id="'. $reply['reply_id'] .'" data-track-label="1"><span class="nah-button-text">';
+
+            if (!empty($_SESSION['signed_in']) && checkNahAdded($reply['reply_id'], 1, $_SESSION['user_id'])) {
+                echo 'Un-nah.';
+            } else {
+                echo 'Nah...';
+            }
+
+            echo '</span></button>';
+
+        echo '<div class="empathy symbol" yeahs="'. $yeah_amount['COUNT(yeah_by)']  .'" nahs="'. $nah_amount['COUNT(nah_by)']  .'" title="'. $yeah_amount['COUNT(yeah_by)'] .' '. ($yeah_amount['COUNT(yeah_by)'] == 1 ? 'Yeah' : 'Yeahs') .' / '. $nah_amount['COUNT(nah_by)'] .' '. ($nah_amount['COUNT(nah_by)'] == 1 ? 'Nah' : 'Nahs') .'"><span class="yeah-count">'. $yeahs .'</span></div></div>';
 
 	    //yeah content
 		$get_user = $dbc->prepare('SELECT user_face FROM users WHERE users.user_id = ?');

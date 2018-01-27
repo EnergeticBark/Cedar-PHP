@@ -5,16 +5,34 @@ require_once('lib/connect.php');
 $tabTitle = 'Cedar - Community List';
 
 printHeader(3);
+?>
 
-echo '<div id="main-body">
-<div class="community-top-sidebar"><form method="GET" action="/titles/search" class="search">
-      <input type="text" name="query" placeholder="Search Communities" minlength="2" maxlength="20"><input type="submit" value="q" title="Search"></form><div id="identified-user-banner">
-      <a href="/identified_user_posts" data-pjax="#body" class="list-button us">
-        <span class="title">Get the latest news here!</span>
-        <span class="text">Posts from Verified Users</span>
-      </a>
-    </div></div><div class="community-main">';
+<div id="main-body">
+	<div class="community-top-sidebar">
+		<form method="GET" action="/titles/search" class="search">
+			<input type="text" name="query" placeholder="Search Communities" minlength="2" maxlength="20">
+			<input type="submit" value="q" title="Search">
+		</form>
 
+		<div id="identified-user-banner" style="margin-bottom: 10px;">
+			<a href="/identified_user_posts" data-pjax="#body" class="list-button us">
+				<span class="title">Get the latest news here!</span>
+				<span class="text">Posts from Verified Users</span>
+			</a>
+		</div>
+
+		<div class="post-list-outline" style="text-align: center">
+			<h2 class="label">What is Cedar?!?!?</h2>
+			<p style="width: 90%; display: inine-block; padding: 10px;">cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar cedar</p>
+		</div>
+
+		<button type="button" onclick="window.location.href='/titles/new'" class="symbol button create-button" style="padding: 14px 60px;">
+			<span class="favorite-button-text">Create Community</span>
+		</button>
+	</div>
+	<div class="community-main">
+
+<?php
 
 if (!empty($_SESSION['signed_in'])) {
 
@@ -72,7 +90,7 @@ echo '
   </ul>
 </div>
 
-<h3 class="community-title"><span>Communities</span></h3>
+<h3 class="community-title"><span>Official Communities</span></h3>
 <div>
   <ul class="list community-list community-card-list device-new-community-list">';
 
@@ -84,8 +102,9 @@ while ($titles = $titles_result->fetch_assoc()){
 	printTitleInfo($titles);
 }
 
-echo '
-  </ul>
-  <a href="/communities/categories/all" class="big-button">Show More</a></div>
+?>
+
+		</ul>
+		<a href="/communities/categories/all" class="big-button">Show More</a></div>
+	</div>
 </div>
-</div>';
