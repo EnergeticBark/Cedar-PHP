@@ -1,23 +1,25 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.10.14
--- http://www.phpmyadmin.net
+-- version 4.7.5
+-- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Nov 13, 2017 at 11:36 PM
--- Server version: 10.0.31-MariaDB-cll-lve
--- PHP Version: 5.4.31
+-- Host: 127.0.0.1
+-- Generation Time: Jan 27, 2018 at 09:05 PM
+-- Server version: 10.1.28-MariaDB
+-- PHP Version: 7.1.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `cedarphp_cedar`
+-- Database: `cedar`
 --
 
 -- --------------------------------------------------------
@@ -26,8 +28,8 @@ SET time_zone = "+00:00";
 -- Table structure for table `admin_messages`
 --
 
-CREATE TABLE IF NOT EXISTS `admin_messages` (
-  `admin_id` int(8) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `admin_messages` (
+  `admin_id` int(8) NOT NULL,
   `admin_type` int(1) NOT NULL,
   `admin_text` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `admin_to` int(8) NOT NULL,
@@ -35,13 +37,21 @@ CREATE TABLE IF NOT EXISTS `admin_messages` (
   `admin_post` int(8) NOT NULL,
   `is_reply` int(1) NOT NULL,
   `admin_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `admin_read` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`admin_id`),
-  KEY `admin_by` (`admin_by`),
-  KEY `admin_by_2` (`admin_by`),
-  KEY `admin_to` (`admin_to`),
-  KEY `admin_post` (`admin_post`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=65 ;
+  `admin_read` int(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cloudinary_keys`
+--
+
+CREATE TABLE `cloudinary_keys` (
+  `key_id` int(8) NOT NULL,
+  `api_key` bigint(32) NOT NULL,
+  `preset` varchar(32) COLLATE utf8mb4_bin NOT NULL,
+  `site_name` varchar(64) COLLATE utf8mb4_bin NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------
 
@@ -49,14 +59,11 @@ CREATE TABLE IF NOT EXISTS `admin_messages` (
 -- Table structure for table `favorite_titles`
 --
 
-CREATE TABLE IF NOT EXISTS `favorite_titles` (
-  `fav_id` int(8) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `favorite_titles` (
+  `fav_id` int(8) NOT NULL,
   `user_id` int(8) NOT NULL,
-  `title_id` int(8) NOT NULL,
-  PRIMARY KEY (`fav_id`),
-  UNIQUE KEY `user_id` (`user_id`,`title_id`),
-  KEY `title_id` (`title_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=702 ;
+  `title_id` int(8) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------
 
@@ -64,14 +71,25 @@ CREATE TABLE IF NOT EXISTS `favorite_titles` (
 -- Table structure for table `follows`
 --
 
-CREATE TABLE IF NOT EXISTS `follows` (
-  `follow_id` int(8) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `follows` (
+  `follow_id` int(8) NOT NULL,
   `follow_by` int(8) NOT NULL,
-  `follow_to` int(8) NOT NULL,
-  PRIMARY KEY (`follow_id`),
-  UNIQUE KEY `follow_by` (`follow_by`,`follow_to`),
-  KEY `follow_to` (`follow_to`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=8477 ;
+  `follow_to` int(8) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `nahs`
+--
+
+CREATE TABLE `nahs` (
+  `nah_id` int(8) NOT NULL,
+  `nah_post` int(8) NOT NULL,
+  `type` tinyint(1) NOT NULL,
+  `date_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `nah_by` int(8) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------
 
@@ -79,20 +97,16 @@ CREATE TABLE IF NOT EXISTS `follows` (
 -- Table structure for table `notifs`
 --
 
-CREATE TABLE IF NOT EXISTS `notifs` (
-  `notif_id` int(8) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `notifs` (
+  `notif_id` int(8) NOT NULL,
   `notif_type` int(1) NOT NULL,
   `notif_by` int(8) DEFAULT NULL,
   `notif_to` int(8) NOT NULL,
   `notif_post` int(8) DEFAULT NULL,
   `merged` int(8) DEFAULT NULL,
   `notif_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `notif_read` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`notif_id`),
-  KEY `notif_by` (`notif_by`),
-  KEY `notif_to` (`notif_to`),
-  KEY `notif_post` (`notif_post`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=51007 ;
+  `notif_read` int(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------
 
@@ -100,19 +114,16 @@ CREATE TABLE IF NOT EXISTS `notifs` (
 -- Table structure for table `posts`
 --
 
-CREATE TABLE IF NOT EXISTS `posts` (
-  `id` int(8) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `posts` (
+  `id` int(8) NOT NULL,
   `post_by_id` int(8) NOT NULL,
   `post_title` int(8) NOT NULL,
   `deleted` int(1) NOT NULL DEFAULT '0',
   `feeling_id` int(1) NOT NULL DEFAULT '0',
   `text` varchar(800) COLLATE utf8mb4_bin NOT NULL,
   `post_image` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `date_time` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `post_by_id` (`post_by_id`),
-  KEY `posts_ibfk_2` (`post_title`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=99992399 ;
+  `date_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------
 
@@ -120,16 +131,16 @@ CREATE TABLE IF NOT EXISTS `posts` (
 -- Table structure for table `profiles`
 --
 
-CREATE TABLE IF NOT EXISTS `profiles` (
+CREATE TABLE `profiles` (
   `user_id` int(8) NOT NULL,
   `bio` varchar(400) COLLATE utf8mb4_bin DEFAULT NULL,
+  `name_color` varchar(7) COLLATE utf8mb4_bin DEFAULT NULL,
   `country` enum('1','2','3','4','5','6','7') COLLATE utf8mb4_bin DEFAULT NULL,
   `birthday` date DEFAULT NULL,
   `fav_post` int(8) DEFAULT NULL,
   `organization` varchar(256) COLLATE utf8mb4_bin DEFAULT NULL,
   `yeah_notifs` int(1) NOT NULL DEFAULT '1',
-  `last_online` datetime DEFAULT NULL,
-  UNIQUE KEY `user_id` (`user_id`)
+  `last_online` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------
@@ -138,19 +149,16 @@ CREATE TABLE IF NOT EXISTS `profiles` (
 -- Table structure for table `replies`
 --
 
-CREATE TABLE IF NOT EXISTS `replies` (
-  `reply_id` int(8) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `replies` (
+  `reply_id` int(8) NOT NULL,
   `reply_post` int(8) NOT NULL,
   `reply_by_id` int(8) NOT NULL,
   `deleted` int(1) NOT NULL DEFAULT '0',
   `feeling_id` int(1) NOT NULL DEFAULT '0',
   `text` varchar(800) COLLATE utf8mb4_bin NOT NULL,
   `reply_image` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `date_time` datetime NOT NULL,
-  PRIMARY KEY (`reply_id`),
-  KEY `reply_post` (`reply_post`),
-  KEY `reply_by_id` (`reply_by_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=99996487 ;
+  `date_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------
 
@@ -158,15 +166,15 @@ CREATE TABLE IF NOT EXISTS `replies` (
 -- Table structure for table `titles`
 --
 
-CREATE TABLE IF NOT EXISTS `titles` (
+CREATE TABLE `titles` (
   `title_id` int(8) NOT NULL,
-  `title_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `title_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `title_desc` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `title_icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `title_banner` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `perm` int(1) DEFAULT NULL,
   `type` int(1) NOT NULL,
-  PRIMARY KEY (`title_id`)
+  `user_made` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -175,18 +183,16 @@ CREATE TABLE IF NOT EXISTS `titles` (
 -- Table structure for table `users`
 --
 
-CREATE TABLE IF NOT EXISTS `users` (
-  `user_id` int(8) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `users` (
+  `user_id` int(8) NOT NULL,
   `user_name` varchar(20) COLLATE utf8mb4_bin NOT NULL,
   `user_pass` varchar(255) COLLATE utf8mb4_bin NOT NULL,
   `nickname` varchar(16) COLLATE utf8mb4_bin NOT NULL,
   `user_face` varchar(255) COLLATE utf8mb4_bin NOT NULL,
   `date_created` datetime NOT NULL,
   `ip` varchar(50) COLLATE utf8mb4_bin NOT NULL,
-  `user_level` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user_id`),
-  UNIQUE KEY `user_name` (`user_name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin AUTO_INCREMENT=1199 ;
+  `user_level` int(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- --------------------------------------------------------
 
@@ -194,16 +200,172 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Table structure for table `yeahs`
 --
 
-CREATE TABLE IF NOT EXISTS `yeahs` (
-  `yeah_id` int(8) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `yeahs` (
+  `yeah_id` int(8) NOT NULL,
   `yeah_post` int(8) NOT NULL,
   `type` enum('post','reply') CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'post',
-  `date_time` datetime NOT NULL,
-  `yeah_by` int(8) NOT NULL,
-  PRIMARY KEY (`yeah_id`),
-  UNIQUE KEY `yeah_post` (`yeah_post`,`type`,`yeah_by`),
-  KEY `yeah_by` (`yeah_by`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=32577 ;
+  `date_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `yeah_by` int(8) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `admin_messages`
+--
+ALTER TABLE `admin_messages`
+  ADD PRIMARY KEY (`admin_id`),
+  ADD KEY `admin_by` (`admin_by`),
+  ADD KEY `admin_by_2` (`admin_by`),
+  ADD KEY `admin_to` (`admin_to`),
+  ADD KEY `admin_post` (`admin_post`);
+
+--
+-- Indexes for table `cloudinary_keys`
+--
+ALTER TABLE `cloudinary_keys`
+  ADD PRIMARY KEY (`key_id`);
+
+--
+-- Indexes for table `favorite_titles`
+--
+ALTER TABLE `favorite_titles`
+  ADD PRIMARY KEY (`fav_id`),
+  ADD UNIQUE KEY `user_id` (`user_id`,`title_id`),
+  ADD KEY `title_id` (`title_id`);
+
+--
+-- Indexes for table `follows`
+--
+ALTER TABLE `follows`
+  ADD PRIMARY KEY (`follow_id`),
+  ADD UNIQUE KEY `follow_by` (`follow_by`,`follow_to`),
+  ADD KEY `follow_to` (`follow_to`);
+
+--
+-- Indexes for table `nahs`
+--
+ALTER TABLE `nahs`
+  ADD PRIMARY KEY (`nah_id`),
+  ADD KEY `nah_by` (`nah_by`);
+
+--
+-- Indexes for table `notifs`
+--
+ALTER TABLE `notifs`
+  ADD PRIMARY KEY (`notif_id`),
+  ADD KEY `notif_by` (`notif_by`),
+  ADD KEY `notif_to` (`notif_to`),
+  ADD KEY `notif_post` (`notif_post`);
+
+--
+-- Indexes for table `posts`
+--
+ALTER TABLE `posts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `post_by_id` (`post_by_id`),
+  ADD KEY `posts_ibfk_2` (`post_title`);
+
+--
+-- Indexes for table `profiles`
+--
+ALTER TABLE `profiles`
+  ADD UNIQUE KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `replies`
+--
+ALTER TABLE `replies`
+  ADD PRIMARY KEY (`reply_id`),
+  ADD KEY `reply_post` (`reply_post`),
+  ADD KEY `reply_by_id` (`reply_by_id`);
+
+--
+-- Indexes for table `titles`
+--
+ALTER TABLE `titles`
+  ADD PRIMARY KEY (`title_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `user_name` (`user_name`);
+
+--
+-- Indexes for table `yeahs`
+--
+ALTER TABLE `yeahs`
+  ADD PRIMARY KEY (`yeah_id`),
+  ADD UNIQUE KEY `yeah_post` (`yeah_post`,`type`,`yeah_by`),
+  ADD KEY `yeah_by` (`yeah_by`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `admin_messages`
+--
+ALTER TABLE `admin_messages`
+  MODIFY `admin_id` int(8) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cloudinary_keys`
+--
+ALTER TABLE `cloudinary_keys`
+  MODIFY `key_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `favorite_titles`
+--
+ALTER TABLE `favorite_titles`
+  MODIFY `fav_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `follows`
+--
+ALTER TABLE `follows`
+  MODIFY `follow_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `nahs`
+--
+ALTER TABLE `nahs`
+  MODIFY `nah_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `notifs`
+--
+ALTER TABLE `notifs`
+  MODIFY `notif_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT for table `posts`
+--
+ALTER TABLE `posts`
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94061871;
+
+--
+-- AUTO_INCREMENT for table `replies`
+--
+ALTER TABLE `replies`
+  MODIFY `reply_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72923352;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `user_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2746;
+
+--
+-- AUTO_INCREMENT for table `yeahs`
+--
+ALTER TABLE `yeahs`
+  MODIFY `yeah_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
 
 --
 -- Constraints for dumped tables
@@ -229,6 +391,12 @@ ALTER TABLE `favorite_titles`
 ALTER TABLE `follows`
   ADD CONSTRAINT `follows_ibfk_1` FOREIGN KEY (`follow_by`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `follows_ibfk_2` FOREIGN KEY (`follow_to`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `nahs`
+--
+ALTER TABLE `nahs`
+  ADD CONSTRAINT `nahs_ibfk_1` FOREIGN KEY (`nah_by`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `notifs`
@@ -262,6 +430,7 @@ ALTER TABLE `replies`
 --
 ALTER TABLE `yeahs`
   ADD CONSTRAINT `yeahs_ibfk_1` FOREIGN KEY (`yeah_by`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
