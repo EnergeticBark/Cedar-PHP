@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 		$filename = $img['tmp_name'];
 
 		//imageUpload() returns 1 if it fails and the image URL if successful
-		$image = uploadImage($filename);
+		$image = uploadImage($filename, NULL, NULL);
 		if ($image == 1) {
 			$errors[] = 'Image upload failed';
 		}

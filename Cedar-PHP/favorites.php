@@ -8,7 +8,7 @@ if (isset($action)) {
 	$get_user->execute();
 	$user_result = $get_user->get_result();
 	$user = $user_result->fetch_assoc();
-	$tabTitle = 'Cedar - '.$user['nickname'].'\'s Favorite Communities';
+	$tabTitle = 'Cedar - '. $user['nickname'] .'\'s Favorite Communities';
 	printHeader('');
 } else {
 	$get_user = $dbc->prepare('SELECT * FROM users INNER JOIN profiles ON profiles.user_id = users.user_id WHERE users.user_id = ? LIMIT 1');
@@ -32,26 +32,11 @@ $yeah_count->execute();
 $result_count = $yeah_count->get_result();
 $yeah_amount = $result_count->fetch_assoc();
 
-echo '<div id="main-body"><div id="sidebar" class="user-sidebar">';
+echo '<div id="sidebar" class="user-sidebar">';
 
 userContent($user, "Favorites");
 
-echo '<div class="sidebar-setting sidebar-container">
-    <div class="sidebar-post-menu">
-      <a href="/users/'. $user['user_name'] .'/posts" class="sidebar-menu-post with-count symbol">
-        <span>All Posts</span>
-        <span class="post-count">
-          <span class="test-post-count">'. $post_amount['COUNT(id)'] .'</span>
-        </span>
-      </a>
-      <a href="/users/'. $user['user_name'] .'/yeahs" class="sidebar-menu-empathies with-count symbol">
-        <span>Yeahs</span>
-        <span class="post-count">
-          <span class="test-empathy-count">'. $yeah_amount['COUNT(yeah_by)'] .'</span>
-        </span>
-      </a>
-      
-    </div></div>';
+userSidebarSetting($user, 0);
 
 userInfo($user);
 

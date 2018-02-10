@@ -20,7 +20,7 @@ if ($user_result->num_rows == 0){
 
 		if (empty($_SESSION['signed_in']) || $_SESSION['user_id'] == $user['user_id']) {printHeader(1);} else {printHeader('');}
 
-		echo '<script>var loadOnScroll=true;</script><div id="main-body"><div id="sidebar" class="user-sidebar">';
+		echo '<script>var loadOnScroll=true;</script><div id="sidebar" class="user-sidebar">';
 
 		userContent($user, "posts");
 
@@ -33,9 +33,9 @@ if ($user_result->num_rows == 0){
 		<div class="list post-list js-post-list" data-next-page-url="/users/'. $user['user_name'] .'/posts?offset=1&dateTime='.date("Y-m-d H:i:s").'">';
 
 		if (!empty($_SESSION['signed_in']) && $user['user_id'] == $_SESSION['user_id']) {
-			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND deleted < 2 ORDER BY date_time DESC LIMIT 25');
+			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND deleted < 2 ORDER BY posts.date_time DESC LIMIT 25');
 		} else {
-			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND deleted = 0 ORDER BY date_time DESC LIMIT 25');
+			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND deleted = 0 ORDER BY posts.date_time DESC LIMIT 25');
 		}
 		$get_posts->bind_param('i', $user['user_id']);
 
@@ -44,9 +44,9 @@ if ($user_result->num_rows == 0){
 		$offset = ($_GET['offset'] * 25);
 		$dateTime = htmlspecialchars($_GET['dateTime']);
 		if ($user['user_id'] == $_SESSION['user_id']) {
-			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND date_time < ? AND deleted < 2 ORDER BY date_time DESC LIMIT 25 OFFSET ?');
+			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND posts.date_time < ? AND deleted < 2 ORDER BY posts.date_time DESC LIMIT 25 OFFSET ?');
 		} else {
-			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND date_time < ? AND deleted = 0 ORDER BY date_time DESC LIMIT 25 OFFSET ?');
+			$get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title WHERE post_by_id = ? AND posts.date_time < ? AND deleted = 0 ORDER BY posts.date_time DESC LIMIT 25 OFFSET ?');
 		}
 		$get_posts->bind_param('isi', $user['user_id'], $dateTime, $offset);
 	}

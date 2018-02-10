@@ -15,8 +15,7 @@ if ((isset($_GET['offset']) && is_numeric($_GET['offset'])) && isset($_GET['date
 
 	printHeader(2);
 
-	echo '<script>var loadOnScroll=true;</script>
-	<div id="main-body">';
+	echo '<script>var loadOnScroll=true;</script>';
 
 	$get_user = $dbc->prepare('SELECT * FROM users WHERE user_id = ? LIMIT 1');
 	$get_user->bind_param('i', $_SESSION['user_id']);
@@ -33,7 +32,7 @@ if ((isset($_GET['offset']) && is_numeric($_GET['offset'])) && isset($_GET['date
 	--><input type="submit" value="q" title="Search">
 	</form></div><div id="js-main">';
 
-	$get_posts = $dbc->prepare('SELECT posts.*, users.*, titles.* FROM posts INNER JOIN users ON user_id = post_by_id INNER JOIN titles ON title_id = post_title WHERE deleted = 0 AND (post_by_id IN (SELECT follow_to FROM follows WHERE follow_by = ?) OR post_by_id = ?) ORDER BY date_time DESC LIMIT 20');
+	$get_posts = $dbc->prepare('SELECT posts.*, users.*, titles.* FROM posts INNER JOIN users ON user_id = post_by_id INNER JOIN titles ON title_id = post_title WHERE deleted = 0 AND (post_by_id IN (SELECT follow_to FROM follows WHERE follow_by = ?) OR post_by_id = ?) ORDER BY posts.date_time DESC LIMIT 20');
 	$get_posts->bind_param('ii', $_SESSION['user_id'], $_SESSION['user_id']);
 	$get_posts->execute();
 	$posts_result = $get_posts->get_result();

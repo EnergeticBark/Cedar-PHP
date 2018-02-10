@@ -5,7 +5,7 @@ require_once('lib/htmUsers.php');
 if(empty($_SESSION['signed_in'])){
 	$tabTitle = 'Cedar';
 	printHeader('');
-	echo '<div id="main-body"><div class="warning-content warning-content-forward"><div><strong>Welcome to Cedar!</strong><p>You must sign in to view this page.</p>
+	echo '<div class="warning-content warning-content-forward"><div><strong>Welcome to Cedar!</strong><p>You must sign in to view this page.</p>
     <a class="button" href="/">Cedar</a></div></div>';
 } else {
 
@@ -38,7 +38,7 @@ if(empty($_SESSION['signed_in'])){
 		$result_count = $yeah_count->get_result();
 		$yeah_amount = $result_count->fetch_assoc();
 
-		echo '<div id="main-body"><div id="sidebar" class="user-sidebar">';
+		echo '<div id="sidebar" class="user-sidebar">';
 
 		userContent($user, "settings");
 
@@ -240,34 +240,30 @@ if(empty($_SESSION['signed_in'])){
     			$ch = curl_init();
     			curl_setopt_array($ch, array(
     				CURLOPT_URL => 'https://ariankordi.net/seth/'. $_POST['face'],
-    				CURLOPT_HEADER => true,
     				CURLOPT_RETURNTRANSFER => true));
     			$response = curl_exec($ch);
 
                 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 if($httpCode == 404) {
                     $errors[] = 'Invalid NNID.';
-                } else {
-                    $body = substr($response, curl_getinfo($ch, CURLINFO_HEADER_SIZE));
-                    $dom = new DOMDocument;
-                    $dom->loadHTML($body);
-    			}
+                }
 
     			if(empty($errors)){
     				$user_change = $dbc->prepare('UPDATE users SET user_face = ? WHERE users.user_id = ?');
-    				$user_change->bind_param('si', $body, $_SESSION['user_id']);
+    				$user_change->bind_param('si', $response, $_SESSION['user_id']);
     				$user_change->execute();
     			} else {
                     exit($errors[0]);
                 }
     		} else {
 
-    			$img=$_FILES['face'];
+    			$img = $_FILES['face'];
     			if(!empty($img['name'])){
     				$filename = $img['tmp_name'];
     				
                     //imageUpload() returns 1 if it fails and the image URL if successful
-                    $face = uploadImage($filename);
+
+                    $face = uploadImage($filename, 96, 96);
                     if ($face == 1) {
                     	$errors[] = 'Image upload failed';
                     }
@@ -282,6 +278,6 @@ if(empty($_SESSION['signed_in'])){
     			}
     		}
     	}
-    	echo 'success';
+    	echo 'Settings saved.';
     }
 }
