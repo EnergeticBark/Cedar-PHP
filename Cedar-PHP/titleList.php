@@ -81,7 +81,7 @@ echo '
 <div>
   <ul class="list community-list community-card-list test-hot-communities">';
 
-$get_pop_titles = $dbc->prepare('SELECT * FROM titles INNER JOIN (SELECT COUNT(id) AS FUCK_SQL, post_title FROM posts GROUP BY post_title) AS ok ON post_title = title_id WHERE title_id IN (SELECT post_title FROM posts GROUP BY post_title) ORDER BY FUCK_SQL DESC LIMIT 2');
+$get_pop_titles = $dbc->prepare('SELECT * FROM titles INNER JOIN (SELECT COUNT(id) AS FUCK_SQL, post_title FROM posts GROUP BY post_title) AS ok ON post_title = title_id WHERE title_id IN (SELECT post_title FROM posts GROUP BY post_title) ORDER BY FUCK_SQL DESC LIMIT 4');
 $get_pop_titles->execute();
 $pop_titles_result = $get_pop_titles->get_result();
 while ($pop_titles = $pop_titles_result->fetch_assoc()) {
