@@ -22,8 +22,7 @@ if(!isset($_GET['query'])){
 			$tabTitle = 'Cedar - Search Users';
 			printHeader('');
 
-			echo '<script>var loadOnScroll=true;</script>
-			<div id="main-body">';
+			echo '<script>var loadOnScroll=true;</script>';
 
 			if(!empty($_SESSION['signed_in'])){
 				$get_user = $dbc->prepare('SELECT * FROM users WHERE user_id = ? LIMIT 1');

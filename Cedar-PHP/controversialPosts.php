@@ -5,7 +5,7 @@ if((isset($_GET['offset']) && is_numeric($_GET['offset'])) && isset($_GET['date'
   $offset = ($_GET['offset'] * 20);
   $date = htmlspecialchars($_GET['date']);
 
-  $get_posts = $dbc->prepare('SELECT posts.*, users.*, COUNT(yeah_id) AS yeah_count FROM posts INNER JOIN users ON user_id = post_by_id LEFT JOIN yeahs ON yeah_post = posts.id WHERE post_title = ? AND posts.deleted = 0 AND posts.date_time >= ? - INTERVAL 2 DAY AND posts.date_time <= ? GROUP BY posts.id ORDER BY yeah_count DESC LIMIT 20 OFFSET ?');
+  $get_posts = $dbc->prepare('SELECT posts.*, users.*, COUNT(nah_id) AS nah_count FROM posts INNER JOIN users ON user_id = post_by_id LEFT JOIN nahs ON nah_post = posts.id WHERE post_title = ? AND posts.deleted = 0 AND posts.date_time >= ? - INTERVAL 2 DAY AND posts.date_time <= ? GROUP BY posts.id ORDER BY nah_count DESC LIMIT 20 OFFSET ?');
   $get_posts->bind_param('issi', $title_id, $date, $date, $offset);
 
 } else {
@@ -85,17 +85,17 @@ if((isset($_GET['offset']) && is_numeric($_GET['offset'])) && isset($_GET['date'
         </div>
         </section></div><div class="main-column"><div class="post-list-outline"><div id="posts-filter-tab-container" class="tab-container ">
         <div class="tab2"><a id="posts-filter-anchor" href="/titles/'. $title['title_id'] .'"><span class="new-posts">All Posts</span></a>
-        <a class="selected" href="/titles/'. $title['title_id'] .'/popular">Popular posts</a><a class="" href="/titles/'. $title['title_id'] .'/controversial">Controversial posts</a></div></div><div class="pager-button">';
+        <a href="/titles/'. $title['title_id'] .'/popular">Popular posts</a><a class="selected" href="/titles/'. $title['title_id'] .'/controversial">Controversial posts</a></div></div><div class="pager-button">';
 
         if (date("Y-m-d", strtotime($date)) < date("Y-m-d")){
-        	echo '<a href="/titles/'. $title['title_id'] .'/popular?date='. date("Y-m-d", strtotime($date . '+1 day')) .'" class="button back-button symbol"><span class="symbol-label">←</span></a>';
+        	echo '<a href="/titles/'. $title['title_id'] .'/controversial?date='. date("Y-m-d", strtotime($date . '+1 day')) .'" class="button back-button symbol"><span class="symbol-label">←</span></a>';
         }
         
-        echo '<a href="/titles/'. $title['title_id'] .'/popular?date='. $date .'" class="button selected">'. date("m/d/Y", strtotime($date)) .'</a><a href="/titles/'. $title['title_id'] .'/popular?date='. date("Y-m-d", strtotime($date . '-1 day')) .'" class="button next-button symbol"><span class="symbol-label">→</span></a></div>';
+        echo '<a href="/titles/'. $title['title_id'] .'/controversial?date='. $date .'" class="button selected">'. date("m/d/Y", strtotime($date)) .'</a><a href="/titles/'. $title['title_id'] .'/controversial?date='. date("Y-m-d", strtotime($date . '-1 day')) .'" class="button next-button symbol"><span class="symbol-label">→</span></a></div>';
 
-        $get_posts = $dbc->prepare('SELECT posts.*, users.*, COUNT(yeah_id) AS yeah_count FROM posts INNER JOIN users ON user_id = post_by_id LEFT JOIN yeahs ON yeah_post = posts.id WHERE post_title = ? AND posts.deleted = 0 AND posts.date_time >= ? - INTERVAL 2 DAY AND posts.date_time <= ? GROUP BY posts.id ORDER BY yeah_count DESC LIMIT 20');
+        $get_posts = $dbc->prepare('SELECT posts.*, users.*, COUNT(nah_id) AS nah_count FROM posts INNER JOIN users ON user_id = post_by_id LEFT JOIN nahs ON nah_post = posts.id WHERE post_title = ? AND posts.deleted = 0 AND posts.date_time >= ? - INTERVAL 2 DAY AND posts.date_time <= ? GROUP BY posts.id ORDER BY nah_count DESC LIMIT 20');
         $get_posts->bind_param('iss', $title_id, $date, $date);
-        echo '<div class="list post-list" data-next-page-url="/titles/'. $title['title_id'] .'/popular?offset=1&date='. $date .'">';
+        echo '<div class="list post-list" data-next-page-url="/titles/'. $title['title_id'] .'/controversial?offset=1&date='. $date .'">';
     }
 }
 
@@ -115,7 +115,7 @@ if(!$posts_result->num_rows == 0){
 	if(!(isset($_GET['offset']) && is_numeric($_GET['offset']) && isset($_GET['date']))){
 		echo '<div class="no-content">
 		  <div>
-		    <p>There are no popular posts.</p>
+		    <p>There are no controversial posts.</p>
 		  </div>
 		</div>';
 	}

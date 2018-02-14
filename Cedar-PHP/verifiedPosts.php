@@ -6,7 +6,7 @@ $tabTitle = 'Cedar - Posts from Verified Users';
 
 printHeader(3);
 
-echo '<div id="main-body"><div id="sidebar" class="general-sidebar">';
+echo '<div id="sidebar" class="general-sidebar">';
 
 if(!empty($_SESSION['signed_in'])){
 	$get_user = $dbc->prepare('SELECT * FROM users WHERE user_id = ? LIMIT 1');
@@ -30,7 +30,7 @@ echo '<div class="main-column"><div class="post-list-outline">
   </div>
   <div class="list post-list js-post-list list post-list js-post-list test-identified-post-list">';
 
-$get_posts = $dbc->prepare('SELECT posts.* FROM posts, users WHERE posts.post_by_id = users.user_id AND users.user_level > 1 AND posts.deleted = 0 ORDER BY posts.date_time DESC');
+$get_posts = $dbc->prepare('SELECT posts.* FROM posts, users WHERE posts.post_by_id = users.user_id AND users.user_level > 1 AND posts.deleted = 0 ORDER BY posts.date_time DESC LIMIT 25');
 $get_posts->execute();
 $posts_result = $get_posts->get_result();
 

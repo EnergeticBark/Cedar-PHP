@@ -13,11 +13,16 @@ var aTbottom = false;
 var offset = 1;
 var loading = 0;
 
-tippy('.empathy', {
-  animation: 'shift-away',
-  arrow: true,
-  dynamicTitle: true
-})
+// call this function whenever loading new posts
+function reloadYeahTooltip() {
+	window.tip.destroyAll()
+
+	window.tip = tippy('.empathy', {
+		animation: 'shift-away',
+		arrow: true,
+		dynamicTitle: true
+	});
+}
 
 function popup(title, text) {
 	$('body').append('<div class="dialog active-dialog modal-window-open mask">\
@@ -47,6 +52,10 @@ function getNotifs() {
 	});
 }
 
+setInterval(function(){ 
+    	getNotifs();
+    }, 30000);
+
 var favicon = new Favico({
     animation:'none'
 });
@@ -58,18 +67,34 @@ function bindEvents() {
 		
 		//if you click on a post it takes you to 'data-href' an attribute defined in list.php for each post
 		
-		location.href = href;
+		$.pjax({url: href, container: '#main-body'});
     }));
-
-    setInterval(function(){ 
-    	getNotifs();
-    }, 30000);
-
-
 
     // prevents accidentally opening a post when trying to view the Yeah to Nah ratio on mobile
     $('.empathy').off().on('click', function(e) {
     	e.stopImmediatePropagation();
+    });
+
+    $('.my-menu-dark-toggle').off().on('click', function(e) {
+    	e.preventDefault();
+
+    	var v = document.cookie.match('(^|;) ?dark-mode=([^;]*)(;|$)');
+    	isDark = v ? v[2] : null;
+
+    	if (isDark == null) {
+    		var d = new Date();
+    		d.setTime(d.getTime() + (365*24*60*60*1000));
+    		var expires = "expires="+ d.toUTCString();
+    		document.cookie = "dark-mode=1;" + expires + ";path=/";
+
+    		$('link[href="/assets/css/style.css"]').after('<link rel="stylesheet" type="text/css" href="/assets/css/dark.css">');
+    		$('.empty-icon').children().attr('src', '/assets/img/dark-empty.png');
+    	} else {
+    		document.cookie = 'dark-mode=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';
+
+    		$('link[href="/assets/css/dark.css"]').remove();
+    		$('.empty-icon').children().attr('src', '/assets/img/empty.png');
+    	}
     });
 
 
@@ -355,10 +380,6 @@ function bindEvents() {
 		$('#edit-post-page').attr('class', 'dialog active-dialog modal-window-open mask');
 	});
 
-	$('.friend-button').off().on('click', function(){
-		$('.active-dialog').removeClass('none');
-	});
-
 	$('.olv-modal-close-button').off().on('click', function(){
 		$('.mask').addClass('none');
 	});
@@ -438,38 +459,14 @@ function bindEvents() {
 
 	});
 
-
-
-	$('#friend-request').off().on('submit', function(e){
-		e.preventDefault();
-		$(this).find('.post-button').addClass('disabled').attr('disabled', '');
-		var formData = new FormData(this);
-		$.ajax({url: $(this).attr('action'), type: 'POST', data: formData, success:function(data){
-			$('.no-reply-content').remove();
-			$('.no-content').remove();
-			if ($('#post-form').attr('action').substr(-7) == 'replies') {
-				$('.reply-list').append(data);
-			} else {
-				$('.post-list').prepend(data);
-			}
-			$('.post').fadeIn();
-			$(this).find('.post-button').removeClass('disabled').removeAttr("disabled");
-			$('.feeling-button').removeClass('checked');
-			$('.feeling-button-normal').addClass('checked');
-			$('#post-form').each(function(){this.reset();});
-			bindEvents();
-		}, contentType: false, processData: false})
-	});
-
-	$('.setting-form').on('submit', function(e){
+	$('.setting-form').off().on('submit', function(e){
 		e.preventDefault();
 		$('.apply-button').addClass('disabled').prop('disabled', '');
 		var formData = new FormData(this);
 		$.ajax({url: $(this).attr('action'), type: 'POST', data: formData, success:function(data){
-			if(data == 'success'){
-				popup('', 'Settings saved.');
-				$('.apply-button').removeClass('disabled').removeAttr('disabled', '');
-			}
+			popup('', data);
+
+			$('.apply-button').removeClass('disabled').removeAttr('disabled', '');
 		}, contentType: false, processData: false})
 	});
 
@@ -514,9 +511,23 @@ function bindEvents() {
 			}
 		});
 	}
+
+	$(document).on('pjax:end', function() {
+		getNotifs();
+		bindEvents();
+		reloadYeahTooltip();
+		console.log(window.tip);
+	});
+
+	$(document).pjax('a', '#main-body', replace = true);
 }
 
-$(document).ready(function(){
-    bindEvents();
+$(document).ready(function() {
+	window.tip = tippy('.empathy', {
+		animation: 'shift-away',
+		arrow: true,
+		dynamicTitle: true
+	});
+	bindEvents();
     getNotifs();
 });

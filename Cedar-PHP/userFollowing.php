@@ -20,7 +20,7 @@ if ($user_result->num_rows == 0){
 
 		printHeader('');
 
-		echo '<div id="main-body"><div id="sidebar" class="user-sidebar">';
+		echo '<div id="sidebar" class="user-sidebar">';
 
 		userContent($user, "following");
 

@@ -14,8 +14,6 @@ if(!isset($_GET['query'])){
 
 		printHeader(3);
 
-		echo '<div id="main-body">';
-
 		if(!empty($_SESSION['signed_in'])){
 			$get_user = $dbc->prepare('SELECT * FROM users WHERE user_id = ? LIMIT 1');
 			$get_user->bind_param('i', $_SESSION['user_id']);

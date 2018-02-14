@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 27, 2018 at 09:05 PM
+-- Generation Time: Feb 10, 2018 at 08:28 AM
 -- Server version: 10.1.28-MariaDB
 -- PHP Version: 7.1.11
 
@@ -174,7 +174,10 @@ CREATE TABLE `titles` (
   `title_banner` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `perm` int(1) DEFAULT NULL,
   `type` int(1) NOT NULL,
-  `user_made` tinyint(1) NOT NULL DEFAULT '0'
+  `user_made` tinyint(1) NOT NULL DEFAULT '0',
+  `title_by` int(8) DEFAULT NULL,
+  `time_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `owner_only` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -286,7 +289,8 @@ ALTER TABLE `replies`
 -- Indexes for table `titles`
 --
 ALTER TABLE `titles`
-  ADD PRIMARY KEY (`title_id`);
+  ADD PRIMARY KEY (`title_id`),
+  ADD KEY `title_by` (`title_by`);
 
 --
 -- Indexes for table `users`
@@ -329,43 +333,43 @@ ALTER TABLE `favorite_titles`
 -- AUTO_INCREMENT for table `follows`
 --
 ALTER TABLE `follows`
-  MODIFY `follow_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `follow_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `nahs`
 --
 ALTER TABLE `nahs`
-  MODIFY `nah_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `nah_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `notifs`
 --
 ALTER TABLE `notifs`
-  MODIFY `notif_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `notif_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94061871;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95968679;
 
 --
 -- AUTO_INCREMENT for table `replies`
 --
 ALTER TABLE `replies`
-  MODIFY `reply_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72923352;
+  MODIFY `reply_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73758014;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2746;
+  MODIFY `user_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2747;
 
 --
 -- AUTO_INCREMENT for table `yeahs`
 --
 ALTER TABLE `yeahs`
-  MODIFY `yeah_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
+  MODIFY `yeah_id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=172;
 
 --
 -- Constraints for dumped tables
@@ -424,6 +428,12 @@ ALTER TABLE `profiles`
 ALTER TABLE `replies`
   ADD CONSTRAINT `replies_ibfk_1` FOREIGN KEY (`reply_post`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `replies_ibfk_2` FOREIGN KEY (`reply_by_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `titles`
+--
+ALTER TABLE `titles`
+  ADD CONSTRAINT `titles_ibfk_1` FOREIGN KEY (`title_by`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `yeahs`

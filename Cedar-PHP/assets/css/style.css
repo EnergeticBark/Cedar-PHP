@@ -155,7 +155,7 @@ body {
 }
 
 #global-menu li.selected a {
-    color: #3caa00;
+    color: #3caa00 !important;
 }
 
 #global-menu li a:hover, #global-menu li button:hover {
@@ -1629,6 +1629,11 @@ button {
     color: #5ac800;
 }
 
+.sidebar-setting .sidebar-menu-nahs:before {
+    content: "U";
+    color: #5ac800;
+}
+
 .test-identified-post-list .post .community-container a:hover {
     text-decoration: underline;
 }
@@ -2175,8 +2180,9 @@ h2.reply-label {
     background: linear-gradient(top, #81e52e #5ac800);
 }
 
+/* Yeah I know it's called tab2 but its being used for 3 things now fuck off. */
 .tab2 a {
-    width: 50%;
+    width: 33.333333333%;
 }
 
 .tab2 a span, .tab3 a span {
@@ -2500,6 +2506,10 @@ form.search input[type="text"]:focus {
     content: "Y";
 }
 
+#global-menu #global-my-menu .my-menu-dark-toggle:before {
+	 content: '3';
+}
+
 .nah {
 	margin-left: 5px;
 	float: left;
@@ -2547,6 +2557,15 @@ form.search input[type="text"]:focus {
 
 .empathy {
 	user-select: none;
+}
+
+#edit-title .button:before {
+	content: 'Y';
+    display: inline-block;
+    margin-top: -2px;
+    margin-right: 5px;
+    font-size: 16px;
+    vertical-align: middle;
 }
 
 
@@ -2861,21 +2880,6 @@ form.search input[type="text"]:focus {
     -o-border-radius: 5px;
     border-radius: 5px;
     text-align: left;
-}
-
-#identified-user-banner .us:before {
-    background-position: 200px center;
-}
-
-#identified-user-banner a:before {
-    background: url(/assets/img/identified-user-banner.png?OW3iYEofaVCFM9o_MV2NVg);
-    background-size: 150px 50px;
-    content: '';
-    height: 50px;
-    float: left;
-    margin: 6px 9px 6px 10px;
-    width: 50px;
-    display: block;
 }
 
 #image-header-content {
@@ -3336,7 +3340,7 @@ p, h1, h2, h3 {
 	vertical-align: bottom;
 }
 
-#community-favorite .empty-icon img{
+#community-favorite .empty-icon img {
 	width: 100%;
 	height: auto;
 	border-radius: 5px;
@@ -3506,6 +3510,11 @@ form.search {
     padding: 15px 0 10px;
     vertical-align: top;
     width: 33.333333333%;
+}
+
+.sidebar-setting .sidebar-post-menu a:first-child:nth-last-child(4),
+.sidebar-setting .sidebar-post-menu a:first-child:nth-last-child(4) ~ a {
+	width: 25%;
 }
 
 .sidebar-setting .sidebar-post-menu a:before {

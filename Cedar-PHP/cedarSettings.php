@@ -8,7 +8,6 @@ if($_SERVER['REQUEST_METHOD'] != 'POST'){
 	$tabTitle = 'Cedar - Cedar Settings';
 	printHeader('');
 
-	echo '<div id="main-body">';
 	$get_user = $dbc->prepare('SELECT * FROM users INNER JOIN profiles ON profiles.user_id = users.user_id WHERE users.user_id = ? LIMIT 1');
 	$get_user->bind_param('i', $_SESSION['user_id']);
 	$get_user->execute();

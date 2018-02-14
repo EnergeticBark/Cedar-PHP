@@ -26,11 +26,15 @@ if (!(($title['perm'] == 1 && $user['user_level'] > 1) || $title['perm'] == NULL
 	return;
 }
 
+if (($title['owner_only'] == 1) && ($title['title_by'] !== $_SESSION['user_id'])) {
+	return;
+}
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST'){
 	
 	echo '<form id="post-form" method="post" action="/postText.php" enctype="multipart/form-data">
 		<div class="post-count-container">
-			<input type="hidden" name="title_id" value="'.$title['title_id'].'">
+			<input type="hidden" name="title_id" value="'. $title['title_id'] .'">
 			<div class="textarea-feedback" style="float:left;">
 				<font color="#646464" style="font-size: 13px; padding: 0 3px 0 7px;">800</font> Characters Remaining
 			</div>
@@ -100,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST'){
 		$filename = $img['tmp_name'];
 
 		//imageUpload() returns 1 if it fails and the image URL if successful
-		$image = uploadImage($filename);
+		$image = uploadImage($filename, NULL, NULL);
 		if ($image == 1) {
 			$errors[] = 'Image upload failed.';
 		}

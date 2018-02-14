@@ -21,42 +21,48 @@ if ($user_result->num_rows == 0) {
 
         echo '<script>var loadOnScroll=true;</script><div id="sidebar" class="user-sidebar">';
 
-        userContent($user, "yeahs");
+        userContent($user, "nahs");
 
-        userSidebarSetting($user, 3);
+        userSidebarSetting($user, 4);
 
         userInfo($user);
 
         echo '</div>
         <div class="main-column">
           <div class="post-list-outline">
-            <h2 class="label">'. htmlspecialchars($user['nickname'], ENT_QUOTES) .'\'s Yeahs</h2>
-            <div class="list post-list js-post-list" data-next-page-url="/users/'. $user['user_name'] .'/yeahs?offset=1&dateTime='.date("Y-m-d H:i:s").'">';
+            <h2 class="label">'. htmlspecialchars($user['nickname'], ENT_QUOTES) .'\'s Nahs</h2>
+            <div class="list post-list js-post-list" data-next-page-url="/users/'. $user['user_name'] .'/nahs?offset=1&dateTime='.date("Y-m-d H:i:s").'">';
 
-        $get_yeahs = $dbc->prepare('SELECT * FROM yeahs WHERE yeah_by = ? ORDER BY yeah_id DESC LIMIT 20');
-        $get_yeahs->bind_param('i', $user['user_id']);
+        if ($user['user_id'] !== $_SESSION['user_id']) {
+            exit('<div id="user-page-no-content" class="no-content"><div>
+            <p>You can\'t view someone else\'s Nahs.</p>
+            </div></div>');
+        }
+
+        $get_nahs = $dbc->prepare('SELECT * FROM nahs WHERE nah_by = ? ORDER BY date_time DESC LIMIT 20');
+        $get_nahs->bind_param('i', $user['user_id']);
 
     } else {
         $offset = ($_GET['offset'] * 25);
         $dateTime = htmlspecialchars($_GET['dateTime']);
-        $get_yeahs = $dbc->prepare('SELECT * FROM yeahs WHERE yeah_by = ? AND date_time < ? ORDER BY date_time DESC LIMIT 20 OFFSET ?');
-        $get_yeahs->bind_param('isi', $user['user_id'], $dateTime, $offset);
+        $get_nahs = $dbc->prepare('SELECT * FROM nahs WHERE nah_by = ? AND date_time < ? ORDER BY date_time DESC LIMIT 20 OFFSET ?');
+        $get_nahs->bind_param('isi', $user['user_id'], $dateTime, $offset);
     }
 
-    $get_yeahs->execute();
-    $yeahs_result = $get_yeahs->get_result();
+    $get_nahs->execute();
+    $nahs_result = $get_nahs->get_result();
 
-    if (!$yeahs_result->num_rows == 0) {
+    if (!$nahs_result->num_rows == 0) {
 
-        while ($yeahs = $yeahs_result->fetch_array()) {
+        while ($nahs = $nahs_result->fetch_array()) {
 
-            if ($yeahs['type'] == "post") {
+            if ($nahs['type'] == 0) {
 
                 $get_posts = $dbc->prepare('SELECT * FROM posts INNER JOIN titles ON title_id = post_title INNER JOIN users ON user_id = post_by_id WHERE id = ? AND deleted = 0 LIMIT 1');
-                $get_posts->bind_param('i', $yeahs['yeah_post']);
+                $get_posts->bind_param('i', $nahs['nah_post']);
                 $get_posts->execute();
                 $posts_result = $get_posts->get_result();
-                if ($posts_result->num_rows==0) {
+                if ($posts_result->num_rows == 0) {
                     continue;
                 }
                 $posts = $posts_result->fetch_assoc();
@@ -72,7 +78,7 @@ if ($user_result->num_rows == 0) {
 
                 //replies
                 $get_replies = $dbc->prepare('SELECT * FROM replies WHERE reply_id = ? LIMIT 1');
-                $get_replies->bind_param('i', $yeahs['yeah_post']);
+                $get_replies->bind_param('i', $nahs['nah_post']);
                 $get_replies->execute();
                 $replies_result = $get_replies->get_result();
                 $replies = $replies_result->fetch_assoc();
@@ -113,7 +119,8 @@ if ($user_result->num_rows == 0) {
                 }
 
                 echo '<div id="post-body">'. (mb_strlen($replies['text']) > 199 ? mb_substr($replies['text'],0,200) . '...' : $replies['text']) .'</div><div id="post-meta">';
-                                $yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "reply" AND yeah_post = ?');
+
+                $yeah_count = $dbc->prepare('SELECT COUNT(yeah_by) FROM yeahs WHERE type = "reply" AND yeah_post = ?');
                 $yeah_count->bind_param('i', $replies['reply_id']);
                 $yeah_count->execute();
                 $result_count = $yeah_count->get_result();
@@ -174,7 +181,6 @@ if ($user_result->num_rows == 0) {
                 echo '</span></button>';
 
                 echo '<div class="empathy symbol" yeahs="'. $yeah_amount['COUNT(yeah_by)']  .'" nahs="'. $nah_amount['COUNT(nah_by)']  .'" title="'. $yeah_amount['COUNT(yeah_by)'] .' '. ($yeah_amount['COUNT(yeah_by)'] == 1 ? 'Yeah' : 'Yeahs') .' / '. $nah_amount['COUNT(nah_by)'] .' '. ($nah_amount['COUNT(nah_by)'] == 1 ? 'Nah' : 'Nahs') .'"><span class="yeah-count">'. $yeahs .'</span></div>';
-
                 echo '</div></div></div>';
             }
         }
@@ -184,7 +190,7 @@ if ($user_result->num_rows == 0) {
         if (!((isset($_GET['offset']) && is_numeric($_GET['offset'])) && isset($_GET['dateTime']))) {
             echo '
             <div id="user-page-no-content" class="no-content"><div>
-            <p>There are no posts with Yeahs yet.</p>
+            <p>There are no posts with Nahs yet.</p>
             </div></div>
             </div>';
         }

@@ -1,17 +1,49 @@
 <?php
 require_once('lib/htm.php');
-if(empty($_SESSION['signed_in'])){
+
+$get_user = $dbc->prepare('SELECT * FROM users WHERE ip = ? ORDER BY user_level DESC LIMIT 1');
+$get_user->bind_param('s', $_SERVER['HTTP_CF_CONNECTING_IP']);
+$get_user->execute();
+$user_result = $get_user->get_result();
+$user = $user_result->fetch_assoc();
+
+if ((!$user_result->num_rows == 0) && ($user['user_level'] < 1)) {
+    exit('You\'ve already made an account on your network.');
+}
+
+// proxy detection
+$ch = curl_init();
+curl_setopt_array($ch, array(
+    CURLOPT_URL => 'http://check.getipintel.net/check.php?ip='. $_SERVER['HTTP_CF_CONNECTING_IP'] .'&contact=energeticbark37@gmail.com&flags=f',
+    CURLOPT_RETURNTRANSFER => true));
+$is_proxy = curl_exec($ch);
+curl_close($ch);
+
+if ($is_proxy > 0.99) {
+    exit('You can\'t create an account when using a proxy.');
+}
+
+
+
+
+if (empty($_SESSION['signed_in'])) {
 	if($_SERVER['REQUEST_METHOD'] != 'POST'){
 		?>
-        <script src="/assets/js/jquery-3.2.1.min.js"></script>
-        <script async src="/assets/js/yeah.js"></script>
-        <script src="/assets/js/pace.min.js"></script>
-        <script src="/assets/js/favico.js"></script>
-        <script src="https://unpkg.com/tippy.js@2.0.9/dist/tippy.all.min.js"></script>
-        <meta name="viewport" content="width=device-width,minimum-scale=1, maximum-scale=1">
-        <link rel="stylesheet" type="text/css" href="/assets/css/login.css">
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <script src="/assets/js/pace.min.js"></script>
+            <script src="/assets/js/jquery-3.3.1.min.js"></script>
+            <script src="/assets/js/jquery.pjax.js"></script>
+            <script src="https://unpkg.com/tippy.js@2.0.9/dist/tippy.all.min.js"></script>
+            <script src="/assets/js/favico.js"></script>
+            <script src="/assets/js/yeah.js"></script>
+            <meta name="viewport" content="width=device-width,minimum-scale=1, maximum-scale=1">
+            <link rel="stylesheet" type="text/css" href="/assets/css/login.css">
+            <title>Create an account</title>
+        </head>
 
-        <title>Create an account</title>
+        <body>
         <div class="hb-contents-wrapper"><div class="hb-container hb-l-inside">
             <h2>Sign Up</h2>
             <p>Create a User ID for Cedar.</p>
@@ -70,7 +102,7 @@ if(empty($_SESSION['signed_in'])){
 
                 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 if($httpCode == 404) {
-                    $errors[] = 'Invalid NNID.';
+                    $errors = 'Invalid NNID.';
                 } else {
                     $body = substr($response, curl_getinfo($ch, CURLINFO_HEADER_SIZE));
                     $dom = new DOMDocument;
@@ -84,26 +116,26 @@ if(empty($_SESSION['signed_in'])){
     		} else {
     			$img=$_FILES['face'];
     			if (empty($img['name'])) {  
-    				$errors[] = 'upload an image';
+    				$errors = 'upload an image';
     			} else {
     				$filename = $img['tmp_name'];
 
                     //imageUpload() returns 1 if it fails and the image URL if successful
-                    $face = uploadImage($filename);
+                    $face = uploadImage($filename, 96, 96);
                     if ($face == 1) {
-                        $errors[] = 'Image upload failed';
+                        $errors = 'Image upload failed';
                     }
     			}
     		}
 
     		if (strlen($_POST['username']) > 16) {
-    			$errors[] = 'User ID connot be longer than 16 characters.';
+    			$errors = 'User ID connot be longer than 16 characters.';
     		}
     		if (empty($_POST['username'])){
-    			$errors[] = 'User ID cannot be empty.';
+    			$errors = 'User ID cannot be empty.';
     		}
     		if(preg_match("/([%\$#\*\/\ ]+)/", $_POST['username'])){
-    			$errors[] = 'User ID cannot contain special characters or spaces.';
+    			$errors = 'User ID cannot contain special characters or spaces.';
     		}
 
     		$search_user = $dbc->prepare('SELECT * FROM users WHERE users.user_name = ? LIMIT 1');
@@ -112,21 +144,21 @@ if(empty($_SESSION['signed_in'])){
     		$user_result = $search_user->get_result();
 
     		if ($user_result->num_rows > 0) {
-    			$errors[] = 'User ID already exists';
+    			$errors = 'User ID already exists';
     		}
 
     		if ($_POST['password'] != $_POST['confirm_password']) {
-    			$errors[] = 'Passwords do not match.';
+    			$errors = 'Passwords do not match.';
     		}
     		if (empty($_POST['password'])) {
-    			$errors[] = 'Password cannot be empty.';
+    			$errors = 'Password cannot be empty.';
     		}
 
     		if (strlen($_POST['name']) > 16){
-    			$errors[] = 'Name connot be longer than 16 characters.';
+    			$errors = 'Name connot be longer than 16 characters.';
     		}
     		if (empty($_POST['name'])){
-    			$errors[] = 'Name cannot be empty.';
+    			$errors = 'Name cannot be empty.';
     		}
 
     		if (!empty($errors)){
@@ -139,7 +171,7 @@ if(empty($_SESSION['signed_in'])){
     			$password_gen = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
     			$new_user = $dbc->prepare('INSERT INTO users (user_name, user_pass, nickname, user_face, date_created, ip) VALUES (?,?,?,?,NOW(),?)');
-    			$new_user->bind_param('sssss', $username, $password_gen, $name, $face, $_SERVER['REMOTE_ADDR']);
+    			$new_user->bind_param('sssss', $username, $password_gen, $name, $face, $_SERVER['HTTP_CF_CONNECTING_IP']);
     			$new_user->execute();
 
     			$get_user = $dbc->prepare('SELECT user_id FROM users WHERE user_name = ? LIMIT 1');
@@ -148,7 +180,7 @@ if(empty($_SESSION['signed_in'])){
     			$user_result = $get_user->get_result();
 
     			if ($user_result->num_rows == 0){
-    				printHeader();
+    				printHeader('');
     				exit('<br>There was an error creating your account please try again.');
     			} else {
 
