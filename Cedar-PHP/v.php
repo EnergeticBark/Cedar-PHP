@@ -1,2 +1,0 @@
-
-y i had negros.
